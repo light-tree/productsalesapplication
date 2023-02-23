@@ -9,4 +9,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="primary_inside_app">#FF9933</color>
     <color name="primary_outside_app">#FF8000</color>
+    <color name="red_orange">#FF4500</color>
+    <color name="red">#FF0000</color>
+
+
 </resources>

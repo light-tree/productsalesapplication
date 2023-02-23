@@ -1,9 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activities.CartDetailActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context=".activities.CartDetailActivity">
+        >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp"
+
+
+        >
+
+
+        <!-- Hình ảnh sản phẩm -->
+        <ImageView
+            android:id="@+id/imgv_product"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentStart="true"
+            android:scaleType="centerCrop"
+            android:layout_margin="20dp"
+            />
+        <TextView
+            android:id="@+id/tv_product_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/imgv_product"
+            android:layout_alignTop="@+id/imgv_product"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:maxLines="1" />
+        <TextView
+            android:id="@+id/tv_Id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/imgv_product"
+            android:layout_below="@+id/tv_product_name"
+            android:textSize="14sp"
+            android:textColor="#808080" />
+
+
+        <TextView
+            android:id="@+id/tv_product_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/imgv_product"
+            android:layout_below="@+id/tv_Id"
+            android:textSize="14sp"
+            android:textColor="#808080" />
+
+        <LinearLayout
+
+            android:id="@+id/_linear_group_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_toEndOf="@+id/imgv_product"
+            android:layout_below="@+id/tv_product_price"
+            >
+
+            <Button
+                android:id="@+id/decrease_quantity_button"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:text="\u2212"
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:fontFamily="sans-serif-medium"
+                android:textStyle="bold"
+                android:backgroundTint="#F5FFFA"
+                />
+
+            <TextView
+                android:id="@+id/tv_product_quantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+
+            <Button
+                android:id="@+id/increase_quantity_button"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:text="\u002B"
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:fontFamily="sans-serif-medium"
+                android:textStyle="bold"
+                android:backgroundTint="#1E90FF"
+                />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_product_total_money"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/imgv_product"
+            android:layout_below="@+id/_linear_group_quantity"
+
+            android:textSize="14sp"
+            android:textColor="#808080" />
+
+        <Button
+
+            android:id="@+id/btn_Cart_Remove"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:text="Xóa"
+
+
+            android:textColor="#ffffff"
+            android:backgroundTint="#FF0E57" />
+
+    </RelativeLayout>
+
+
+
+</LinearLayout>
+

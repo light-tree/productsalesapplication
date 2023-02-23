@@ -5,5 +5,52 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.CartActivity">
+    <LinearLayout
+        android:id="@+id/view_product_cart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="20dp"
+      >
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        >
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_cart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp" />
+    </ScrollView>
+
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hủy Bỏ"
+        app:layout_constraintBottom_toBottomOf="@id/view_product_cart"
+        app:layout_constraintEnd_toStartOf="@+id/btn_confirm_card"
+        app:layout_constraintStart_toStartOf="@id/view_product_cart"
+        android:textColor="#ffffff"
+        android:backgroundTint="#FF0E57"
+        />
+
+    <Button
+        android:id="@+id/btn_confirm_card"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Đặt hàng"
+        app:layout_constraintBottom_toBottomOf="@id/view_product_cart"
+        app:layout_constraintEnd_toEndOf="@id/view_product_cart"
+        app:layout_constraintStart_toEndOf="@+id/btn_cancel"
+
+     />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
