@@ -6,4 +6,105 @@
     android:layout_height="match_parent"
     tools:context=".activities.OrderActivity">
 
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <EditText
+            android:id="@+id/ed_customer_phone_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Số điện thoại"
+            android:inputType="phone"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/ed_customer_fullname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Họ và Tên"
+            android:inputType="text"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/ed_customer_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Địa chỉ"
+            android:inputType="text"
+            android:textSize="16sp" />
+
+        <Button
+
+            android:id="@+id/btn_Cart_Remove"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:backgroundTint="#4f86f7"
+
+
+            android:text="Tim kiếm"
+            android:textColor="#ffffff" />
+
+        <TextView
+            android:id="@+id/tv_invoice_total"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+
+            >
+
+
+        </TextView>
+
+
+        <ScrollView
+            android:id="@+id/view_order_detail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_cart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp" />
+        </ScrollView>
+
+
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#FF0E57"
+
+        android:text="Trở về"
+
+        android:textColor="#ffffff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_confirm_card"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_confirm_card"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Xác Nhận"
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_cancel" />
+
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
