@@ -24,7 +24,10 @@ public class HomeActivity extends AppCompatActivity {
 //    private ActionBarDrawerToggle toggle;
 //    private NavigationView navigationView;
     private ProductAdapter productAdapter;
-    private RecyclerView productListRecyclerView;
+    private RecyclerView productListRecyclerView1;
+
+    private ProductAdapter productAdapter2;
+    private RecyclerView productListRecyclerView2;
 
     private List<Product> products = new ArrayList<>(Arrays.asList(
             new Product("drawable://sample_product.jpg", "Product A", 100),
@@ -65,10 +68,14 @@ public class HomeActivity extends AppCompatActivity {
 //        });
 
         productAdapter = new ProductAdapter(products);
-        productListRecyclerView = findViewById(R.id.product_list);
+        productListRecyclerView1 = findViewById(R.id.product_list_1);
 //        productListView.setLayoutManager(new LinearLayoutManager(this));
 //        productListRecyclerView.setLayoutManager(new GridLayoutManager(this, 1));
-        productListRecyclerView.setAdapter(productAdapter);
-        productListRecyclerView.setNestedScrollingEnabled(false);
+        productListRecyclerView1.setAdapter(productAdapter);
+        productListRecyclerView1.setNestedScrollingEnabled(false);
+
+        productListRecyclerView2 = findViewById(R.id.product_list_2);
+        productListRecyclerView2.setAdapter(productAdapter);
+        productListRecyclerView2.setNestedScrollingEnabled(false);
     }
 }
