@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">product-sales-application</string>
+    <string name="app_name">KHB</string>
     <string name="product_type_1">Điện thoại</string>
     <string name="product_type_2">Máy tính, laptop</string>
     <string name="product_type_3">Máy lạnh</string>

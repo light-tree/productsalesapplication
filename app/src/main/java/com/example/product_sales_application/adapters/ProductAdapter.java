@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.product_sales_application.R;
+import com.example.product_sales_application.activities.HomeActivity;
 import com.example.product_sales_application.models.Product;
 
 import java.io.File;
@@ -21,7 +22,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     private Context context;
     public static class ViewHolder extends RecyclerView.ViewHolder {
-
         public ImageView image;
         public TextView name;
         public TextView price;

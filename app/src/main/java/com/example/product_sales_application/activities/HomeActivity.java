@@ -2,12 +2,17 @@ package com.example.product_sales_application.activities;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import android.view.MenuInflater;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 
 import com.example.product_sales_application.R;
 import com.example.product_sales_application.adapters.ProductAdapter;
@@ -20,9 +25,8 @@ import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
 
-    private DrawerLayout drawerLayout;
-//    private ActionBarDrawerToggle toggle;
-//    private NavigationView navigationView;
+    private CoordinatorLayout drawerLayout;
+    private Toolbar toolbar;
     private ProductAdapter productAdapter;
     private RecyclerView productListRecyclerView1;
 
@@ -67,6 +71,9 @@ public class HomeActivity extends AppCompatActivity {
 //            return true;
 //        });
 
+        toolbar = findViewById(R.id.main_toolbar);
+        setSupportActionBar(toolbar);
+
         productAdapter = new ProductAdapter(products);
         productListRecyclerView1 = findViewById(R.id.product_list_1);
 //        productListView.setLayoutManager(new LinearLayoutManager(this));
@@ -77,5 +84,13 @@ public class HomeActivity extends AppCompatActivity {
         productListRecyclerView2 = findViewById(R.id.product_list_2);
         productListRecyclerView2.setAdapter(productAdapter);
         productListRecyclerView2.setNestedScrollingEnabled(false);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+
+        getMenuInflater().inflate(R.menu.menu_nav, menu);
+        return true;
     }
 }
