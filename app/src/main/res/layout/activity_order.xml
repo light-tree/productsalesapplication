@@ -23,7 +23,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="10dp"
+            android:layout_marginBottom="50dp"
+            >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Đặt hàng"
+                android:textSize="32dp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginBottom="20dp"
+                />
 
             <EditText
                 android:id="@+id/ed_customer_phone_number"
@@ -49,15 +61,15 @@
                 android:inputType="text"
                 android:textSize="16sp" />
 
-            <Button
-                android:id="@+id/btn_Cart_Remove"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:backgroundTint="#4f86f7"
-                android:text="Tim kiếm"
-                android:textColor="#ffffff" />
+<!--            <Button-->
+<!--                android:id="@+id/btn_Cart_Remove"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="40dp"-->
+<!--                android:layout_alignParentEnd="true"-->
+<!--                android:layout_centerVertical="true"-->
+<!--                android:backgroundTint="#4f86f7"-->
+<!--                android:text="Tim kiếm"-->
+<!--                android:textColor="#ffffff" />-->
 
             <TextView
                 android:id="@+id/tv_invoice_total"
@@ -65,11 +77,19 @@
                 android:gravity="end"
                 android:layout_height="40dp"/>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Thông tin hóa đơn"
+                android:textSize="16dp"
+                android:textStyle="bold"
+                />
+
             <ScrollView
                 android:id="@+id/view_order_detail"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="10dp">
+                >
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_view_cart"
@@ -77,8 +97,6 @@
                     android:layout_height="match_parent"
                     android:padding="8dp" />
             </ScrollView>
-
-
         </LinearLayout>
 
 
