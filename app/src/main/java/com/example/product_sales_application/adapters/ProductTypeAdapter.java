@@ -1,8 +1,9 @@
 package com.example.product_sales_application.adapters;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,10 +11,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.product_sales_application.R;
+import com.example.product_sales_application.activities.ProductListActivity;
 import com.example.product_sales_application.models.ProductTypeDomain;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public class ProductTypeAdapter extends RecyclerView.Adapter<ProductTypeAdapter.
         }
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View contactView = inflater.inflate(R.layout.product_type_layout, parent, false);
+        View contactView = inflater.inflate(R.layout.view_product_type, parent, false);
 
         ViewHolder viewHolder = new ViewHolder(contactView);
         return viewHolder;
@@ -56,34 +57,35 @@ public class ProductTypeAdapter extends RecyclerView.Adapter<ProductTypeAdapter.
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                confirmDialog(productTypeDomain.getId());
+                context.startActivity(new Intent(context, ProductListActivity.class));
+                ((Activity)context).finish();
             }
         });
 
     }
 
-    private void confirmDialog(long position) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setCancelable(true);
-        builder.setTitle("Delete item");
-        builder.setMessage("Do you want to remove item " + position + "?");
-        builder.setPositiveButton("OK",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        productTypeList.remove(position);
-                        notifyDataSetChanged();
-                    }
-                });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
+//    private void confirmDialog(long position) {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+//        builder.setCancelable(true);
+//        builder.setTitle("Delete item");
+//        builder.setMessage("Do you want to remove item " + position + "?");
+//        builder.setPositiveButton("OK",
+//                new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        productTypeList.remove(position);
+//                        notifyDataSetChanged();
+//                    }
+//                });
+//        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//            }
+//        });
+//
+//        AlertDialog dialog = builder.create();
+//        dialog.show();
+//    }
 
     @Override
     public int getItemCount() {

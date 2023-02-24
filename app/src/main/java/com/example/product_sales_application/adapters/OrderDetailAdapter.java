@@ -1,20 +1,17 @@
-package com.example.product_sales_application.Data.adapter;
+package com.example.product_sales_application.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.product_sales_application.Data.Cart;
-import com.example.product_sales_application.Data.Order;
-import com.example.product_sales_application.Data.OrderDetail;
-import com.example.product_sales_application.Data.Product;
+import com.example.product_sales_application.models.Order;
+import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.R;
 
 public class OrderDetailAdapter  extends RecyclerView.Adapter<OrderDetailAdapter.ViewHolder> {
@@ -26,7 +23,7 @@ public class OrderDetailAdapter  extends RecyclerView.Adapter<OrderDetailAdapter
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View contactView = inflater.inflate(R.layout.activity_order_detail, parent, false);
+        View contactView = inflater.inflate(R.layout.view_order_detail, parent, false);
 
         ViewHolder viewHolder  = new OrderDetailAdapter.ViewHolder(contactView);
         return viewHolder;

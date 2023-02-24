@@ -1,7 +1,8 @@
 package com.example.product_sales_application.adapters;
 
+import android.app.Activity;
 import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.product_sales_application.R;
-import com.example.product_sales_application.activities.HomeActivity;
+import com.example.product_sales_application.activities.ProductDetailActivity;
+import com.example.product_sales_application.activities.ProductListActivity;
 import com.example.product_sales_application.models.Product;
 
-import java.io.File;
 import java.util.List;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
@@ -25,9 +26,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         public ImageView image;
         public TextView name;
         public TextView price;
+        public View view;
 
         public ViewHolder (View viewProduct) {
             super(viewProduct);
+            view = viewProduct;
             image = viewProduct.findViewById(R.id.image);
             name = viewProduct.findViewById(R.id.name);
             price = viewProduct.findViewById(R.id.price);
@@ -42,7 +45,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ProductAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         if(context == null) context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -54,7 +57,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ProductAdapter.ViewHolder holder, int position) {
         Product product = products.get(position);
 
         ImageView image = holder.image;
@@ -73,6 +76,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
         TextView price = holder.price;
         price.setText(String.format("Giá: %.2f", product.getPrice()));
+
+        View view = holder.view;
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                context.startActivity(new Intent(context, ProductDetailActivity.class));
+            }
+        });
     }
 
     @Override

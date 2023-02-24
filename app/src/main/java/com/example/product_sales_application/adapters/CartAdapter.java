@@ -1,4 +1,4 @@
-package com.example.product_sales_application.Data.adapter;
+package com.example.product_sales_application.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,11 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.product_sales_application.Data.Cart;
-import com.example.product_sales_application.Data.Product;
+import com.example.product_sales_application.models.Cart;
+import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.R;
-
-import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
@@ -59,7 +57,7 @@ public static class ViewHolder extends RecyclerView.ViewHolder {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View contactView = inflater.inflate(R.layout.activity_cart_detail, parent, false);
+        View contactView = inflater.inflate(R.layout.view_cart_detail, parent, false);
 
         ViewHolder viewHolder = new ViewHolder(contactView);
         return viewHolder;

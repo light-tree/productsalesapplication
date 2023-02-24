@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
     <item
-        android:title="Giỏ hàng"
-        android:icon="@drawable/nav_cart"
-        app:showAsAction="always"
-        android:id="@+id/cart"
+        android:title="Search"
+        android:icon="@drawable/nav_search"
+        app:showAsAction="ifRoom"
+        android:id="@+id/search"
         />
-
     <item
         android:title="Scanner"
         android:icon="@drawable/nav_scanner"
         app:showAsAction="ifRoom"
         android:id="@+id/scanner"
         />
-
     <item
-        android:title="Scanner"
-        android:icon="@drawable/ic_baseline_menu_24"
-        app:showAsAction="ifRoom"
-        android:id="@+id/menu"
+        android:title="Giỏ hàng"
+        android:icon="@drawable/nav_cart"
+        app:showAsAction="always"
+        android:id="@+id/cart"
         />
 </menu>

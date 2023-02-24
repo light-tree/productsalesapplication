@@ -1,8 +1,9 @@
-package com.example.product_sales_application.Data;
+package com.example.product_sales_application.models;
+
+import com.example.product_sales_application.models.Product;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Cart implements Serializable {
     private ArrayList<Product> products;

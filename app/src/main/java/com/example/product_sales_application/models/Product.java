@@ -1,54 +1,78 @@
 package com.example.product_sales_application.models;
 
-public class Product {
-    private String url;
+import android.graphics.drawable.Drawable;
+
+import java.io.Serializable;
+
+public class Product implements Serializable {
+    private int id;
     private String name;
-    private float price;
+    private int imageResource;
     private String description;
+    private double price;
+    private  int quantity;
 
-    public Product(String url, String name, float price, String description) {
-        this.url = url;
-        this.name = name;
-        this.price = price;
-        this.description = description;
-    }
-
-    public Product(String url, String name, float price) {
-        this.url = url;
-        this.name = name;
-        this.price = price;
-    }
-
-    public Product() {
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public String getDescription() { return description; }
-
-    public void setDescription(String description) { this.description = description; }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getName() {
-        return name;
+    public int getImageResource() {
+        return imageResource;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public float getPrice() {
+    public void setImageResource(int imageResource) {
+        this.imageResource = imageResource;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
 
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public Product(int id, String name, double price) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+    }
+
+    public Product(int id,String name, int imageResource, double price, int quantity, String description) {
+        this.name = name;
+        this.imageResource = imageResource;
+        this.description = description;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+
+
+    public String getDescription() {
+        return description;
+    }
 }

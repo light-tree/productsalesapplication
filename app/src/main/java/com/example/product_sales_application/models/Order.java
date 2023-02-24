@@ -1,6 +1,6 @@
-package com.example.product_sales_application.Data;
+package com.example.product_sales_application.models;
 
-import java.util.List;
+import com.example.product_sales_application.models.Cart;
 
 public class Order {
 
