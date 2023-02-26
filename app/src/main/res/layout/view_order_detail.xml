@@ -6,8 +6,7 @@
     android:orientation="horizontal"
     android:padding="10dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".activities.OrderDetailActivity">
+    xmlns:tools="http://schemas.android.com/tools">
     >
 
     <RelativeLayout

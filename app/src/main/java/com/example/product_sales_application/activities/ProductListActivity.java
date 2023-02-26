@@ -74,10 +74,10 @@ public class ProductListActivity extends AppCompatActivity {
         productTypeDomainList.add(new ProductTypeDomain(5, "Product1 5", ""));
 
         productList = new ArrayList<>();
-        productList.add(new Product(1, "Iphone10", 100000000f));
-        productList.add(new Product(2, "Iphone11", 110000000f));
-        productList.add(new Product(3, "Iphone12", 120000000f));
-        productList.add(new Product(4, "Iphone13", 130000000f));
+        productList.add(new Product(1, "Iphone10", 100f));
+        productList.add(new Product(2, "Iphone11", 110f));
+        productList.add(new Product(3, "Iphone12", 120f));
+        productList.add(new Product(4, "Iphone13", 130f));
 
         productTypeAdapter = new ProductTypeAdapter(productTypeDomainList);
         productTypeView.setAdapter(productTypeAdapter);
@@ -110,7 +110,7 @@ public class ProductListActivity extends AppCompatActivity {
         }
 
         if (id == R.id.cart) {
-
+            startActivity(new Intent(ProductListActivity.this, CartActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }

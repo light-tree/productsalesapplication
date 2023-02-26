@@ -75,7 +75,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         name.setText(String.format("%s", product.getName()));
 
         TextView price = holder.price;
-        price.setText(String.format("Giá: %.2f", product.getPrice()));
+        price.setText(String.format("%.2f VND", product.getPrice()));
 
         View view = holder.view;
         view.setOnClickListener(new View.OnClickListener() {

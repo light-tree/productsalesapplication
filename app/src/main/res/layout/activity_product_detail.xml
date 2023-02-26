@@ -57,14 +57,14 @@
                         android:id="@+id/price"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="Price: 1000"
+                        android:text="Giá: 1000"
                         android:textStyle="bold"
                         android:textSize="20dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="Description:"
+                        android:text="Chi tiết sản phẩm:"
                         android:textStyle="bold"
                         android:textSize="20dp"
                         />

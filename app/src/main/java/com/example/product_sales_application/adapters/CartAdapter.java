@@ -91,9 +91,6 @@ public static class ViewHolder extends RecyclerView.ViewHolder {
         btnDelete.setOnClickListener(new View.OnClickListener() {
                                       @Override
                                       public void onClick(View v) {
-
-
-
                                           if(cart.removeProduct(product)){
                                               notifyDataSetChanged();
                                           }

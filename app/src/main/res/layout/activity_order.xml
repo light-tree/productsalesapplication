@@ -24,7 +24,13 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:padding="16dp">
-
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/customer_information"
+                android:textSize="16dp"
+                android:textStyle="bold"/>
             <EditText
                 android:id="@+id/ed_customer_phone_number"
                 android:layout_width="match_parent"
@@ -49,21 +55,22 @@
                 android:inputType="text"
                 android:textSize="16sp" />
 
-            <Button
-                android:id="@+id/btn_Cart_Remove"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:backgroundTint="#4f86f7"
-                android:text="Tim kiếm"
-                android:textColor="#ffffff" />
-
             <TextView
                 android:id="@+id/tv_invoice_total"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="end"
-                android:layout_height="40dp"/>
+                android:textSize="24dp"
+                android:text="Tổng"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/product_list"
+                android:textSize="16dp"
+                android:textStyle="bold"/>
 
             <ScrollView
                 android:id="@+id/view_order_detail"
@@ -75,7 +82,7 @@
                     android:id="@+id/recycler_view_cart"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:padding="8dp" />
+                    android:paddingBottom="50dp"/>
             </ScrollView>
 
 

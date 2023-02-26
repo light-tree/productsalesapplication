@@ -16,7 +16,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="16dp">
         <LinearLayout
             android:id="@+id/view_product_cart"
             android:layout_width="match_parent"
@@ -24,6 +25,13 @@
             android:orientation="vertical"
             android:paddingBottom="20dp"
             >
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cart"
+                android:textSize="16dp"
+                android:textStyle="bold"/>
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -33,7 +41,7 @@
                     android:id="@+id/recycler_view_cart"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:padding="10dp" />
+                    android:paddingBottom="50dp" />
             </ScrollView>
 
 
