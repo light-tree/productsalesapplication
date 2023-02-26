@@ -11,9 +11,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.product_sales_application.R;
 import com.google.android.material.navigation.NavigationView;
+import com.google.zxing.integration.android.IntentIntegrator;
 
 public class ProductDetailActivity extends AppCompatActivity {
 
@@ -22,11 +24,14 @@ public class ProductDetailActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private Button buttonBack;
     private Button buttonAdd;
+    private TextView tvProductName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
+        tvProductName = findViewById(R.id.name);
+        tvProductName.setText(getIntent().getStringExtra("productName"));
 
         drawerLayout = findViewById(R.id.drawer_layout_product_detail);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
@@ -104,12 +109,20 @@ public class ProductDetailActivity extends AppCompatActivity {
         }
 
         if (id == R.id.scanner) {
-
+            scannerCode();
         }
 
         if (id == R.id.cart) {
             startActivity(new Intent(ProductDetailActivity.this, CartActivity.class));
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void scannerCode() {
+        IntentIntegrator intentIntegrator = new IntentIntegrator(this);
+        intentIntegrator.setPrompt("Scan a barcode for QRcode");
+        intentIntegrator.setOrientationLocked(false);
+        intentIntegrator.setCameraId(0);
+        intentIntegrator.initiateScan();
     }
 }

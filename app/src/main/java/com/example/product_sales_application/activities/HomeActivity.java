@@ -1,5 +1,9 @@
 package com.example.product_sales_application.activities;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -13,28 +17,58 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.se.omapi.Session;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.product_sales_application.R;
 import com.example.product_sales_application.adapters.ProductAdapter;
 import com.example.product_sales_application.adapters.ProductTypeAdapter;
 import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.models.ProductTypeDomain;
+import com.example.product_sales_application.models.RequestCode;
 import com.google.android.material.navigation.NavigationView;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class HomeActivity extends AppCompatActivity {
 
-//    private CoordinatorLayout drawerLayout;
-//    private Toolbar toolbar;
+    //    private CoordinatorLayout drawerLayout;
+    //    private Toolbar toolbar;
+    private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result != null) {
+//                       if(result.getResultCode() == RequestCode.SCAN_HOME){
+//                           if (result.getData()== null) {
+//                               Toast.makeText(getBaseContext(), "Canceled", Toast.LENGTH_LONG);
+//                           } else {
+//                               Intent resultData = result.getData();
+////                               resultData.ge
+//                               Intent intent = new Intent(HomeActivity.this, ProductDetailActivity.class);
+////                               intent.putExtra("ProductId", )
+//                               activityResultLauncher.launch(intent);
+//                           }
+//                       }
+                    } else {
+                    }
+                }
+            }
+    );
     private RecyclerView productTypeView;
     private List<ProductTypeDomain> productTypeDomainList;
     private ProductTypeAdapter productTypeAdapter;
@@ -78,8 +112,8 @@ public class HomeActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.nav);
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()){
-                case R.id.login:{
+            switch (item.getItemId()) {
+                case R.id.login: {
                     drawerLayout.close();
                     startActivity(new Intent(HomeActivity.this, LoginActivity.class));
                     return true;
@@ -102,7 +136,8 @@ public class HomeActivity extends AppCompatActivity {
         productTypeView.setLayoutManager(horizontalLayoutManagaer);
 
         productAdapter = new ProductAdapter(products);
-        productListRecyclerView1 = findViewById(R.id.product_list_1);;
+        productListRecyclerView1 = findViewById(R.id.product_list_1);
+        ;
         productListRecyclerView1.setAdapter(productAdapter);
         productListRecyclerView1.setNestedScrollingEnabled(false);
 
@@ -141,17 +176,44 @@ public class HomeActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if(toggle.onOptionsItemSelected(item)){
+        if (toggle.onOptionsItemSelected(item)) {
             return true;
         }
 
         if (id == R.id.scanner) {
-
+            scannerCode();
         }
 
         if (id == R.id.cart) {
             startActivity(new Intent(HomeActivity.this, CartActivity.class));
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void scannerCode() {
+        IntentIntegrator intentIntegrator = new IntentIntegrator(this);
+        intentIntegrator.setPrompt("Scan a barcode for QRcode");
+        intentIntegrator.setOrientationLocked(false);
+        intentIntegrator.setCameraId(0);
+        intentIntegrator.initiateScan();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+
+        if (result != null) {
+            if (result.getContents() == null) {
+                Toast.makeText(getBaseContext(), "Canceled", Toast.LENGTH_LONG);
+            } else {
+                Intent intent = new Intent(HomeActivity.this, ProductDetailActivity.class);
+                intent.putExtra("productName", result.getContents());
+                activityResultLauncher.launch(intent);
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

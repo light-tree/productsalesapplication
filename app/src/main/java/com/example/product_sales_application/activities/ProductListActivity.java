@@ -1,5 +1,10 @@
 package com.example.product_sales_application.activities;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -11,6 +16,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.product_sales_application.R;
 import com.example.product_sales_application.adapters.ProductAdapter;
@@ -18,6 +24,8 @@ import com.example.product_sales_application.adapters.ProductTypeAdapter;
 import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.models.ProductTypeDomain;
 import com.google.android.material.navigation.NavigationView;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,12 +114,52 @@ public class ProductListActivity extends AppCompatActivity {
         }
 
         if (id == R.id.scanner) {
-
+            scannerCode();
         }
 
         if (id == R.id.cart) {
             startActivity(new Intent(ProductListActivity.this, CartActivity.class));
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void scannerCode() {
+        IntentIntegrator intentIntegrator = new IntentIntegrator(this);
+        intentIntegrator.setPrompt("Scan a barcode for QRcode");
+        intentIntegrator.setOrientationLocked(false);
+        intentIntegrator.setCameraId(0);
+        intentIntegrator.initiateScan();
+    }
+
+    private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result != null) {
+                        //Làm gì đó khi có response trả về
+                    } else {
+                    }
+                }
+            }
+    );
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+
+        if (result != null) {
+            if (result.getContents() == null) {
+                Toast.makeText(getBaseContext(), "Canceled", Toast.LENGTH_LONG);
+            } else {
+                Intent intent = new Intent(ProductListActivity.this, ProductDetailActivity.class);
+                intent.putExtra("productName", result.getContents());
+                activityResultLauncher.launch(intent);
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }
