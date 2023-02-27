@@ -1,131 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="150dp"
+    android:orientation="horizontal"
+    android:padding="10dp"
+    android:background="@color/white"
+    >
+
+    <!-- Hình ảnh sản phẩm -->
+    <ImageView
+        android:id="@+id/imgv_product"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="top"
+        android:layout_weight="2"
+        android:scaleType="centerInside"
+        />
+
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="10dp"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools">
-        >
+        android:layout_weight="6"
+        android:orientation="vertical"
+        android:paddingLeft="5dp">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingRight="5dp"
-        android:paddingLeft="5dp"
-
-
-        >
-
-
-        <!-- Hình ảnh sản phẩm -->
-        <ImageView
-            android:id="@+id/imgv_product"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_alignParentStart="true"
-            android:scaleType="centerCrop"
-            android:layout_margin="20dp"
-            />
-        <TextView
-            android:id="@+id/tv_product_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@+id/imgv_product"
-            android:layout_alignTop="@+id/imgv_product"
-            android:textSize="16sp"
-            android:textColor="#000000"
-            android:textStyle="bold"
-            android:ellipsize="end"
-            android:maxLines="1" />
         <TextView
             android:id="@+id/tv_Id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@+id/imgv_product"
-            android:layout_below="@+id/tv_product_name"
-            android:textSize="14sp"
-            android:textColor="#808080" />
+            android:text="Mã sàn phẩm"
+            android:textColor="#808080"
+            android:textSize="14sp" />
 
+        <TextView
+            android:id="@+id/tv_product_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/imgv_product"
+            android:layout_toEndOf="@+id/imgv_product"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Product name"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tv_product_price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@+id/imgv_product"
-            android:layout_below="@+id/tv_Id"
-            android:textSize="14sp"
-            android:textColor="#808080" />
-
-        <LinearLayout
-
-            android:id="@+id/_linear_group_quantity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_toEndOf="@+id/imgv_product"
-            android:layout_below="@+id/tv_product_price"
-            >
-
-            <Button
-                android:id="@+id/decrease_quantity_button"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:text="\u2212"
-                android:textSize="18sp"
-                android:textColor="#000000"
-                android:fontFamily="sans-serif-medium"
-                android:textStyle="bold"
-                android:backgroundTint="#F5FFFA"
-                />
-
-            <TextView
-                android:id="@+id/tv_product_quantity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
-
-
-            <Button
-                android:id="@+id/increase_quantity_button"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:text="\u002B"
-                android:textSize="18sp"
-                android:textColor="#000000"
-                android:fontFamily="sans-serif-medium"
-                android:textStyle="bold"
-                android:backgroundTint="#1E90FF"
-                />
-        </LinearLayout>
+            android:text="Giá"
+            android:textColor="#808080"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/tv_product_total_money"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@+id/imgv_product"
-            android:layout_below="@+id/_linear_group_quantity"
+            android:text="Tổng tiền"
+            android:textColor="#808080"
+            android:textSize="14sp" />
 
-            android:textSize="14sp"
-            android:textColor="#808080" />
-
-        <Button
-
-            android:id="@+id/btn_Cart_Remove"
+        <LinearLayout
+            android:id="@+id/_linear_group_quantity"
             android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:text="Xóa"
+            android:layout_height="42dp"
+            android:orientation="horizontal"
+            android:weightSum="3">
 
+            <Button
+                android:id="@+id/decrease_quantity_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="#F5FFFA"
+                android:fontFamily="sans-serif-medium"
+                android:text="\u2212"
+                android:textAlignment="center"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-            android:textColor="#ffffff"
-            android:backgroundTint="#FF0E57" />
+            <TextView
+                android:id="@+id/tv_product_quantity"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center|center_vertical"
+                android:text="1" />
 
-    </RelativeLayout>
+            <Button
+                android:id="@+id/increase_quantity_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="#1E90FF"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center|top"
+                android:text="\u002B"
+                android:textAlignment="gravity"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
 
-
+    <Button
+        android:id="@+id/btn_Cart_Remove"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="2"
+        android:backgroundTint="#FF0E57"
+        android:text="Xóa"
+        />
 
 </LinearLayout>
 
