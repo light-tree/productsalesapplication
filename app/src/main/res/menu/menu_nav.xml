@@ -2,10 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/search"
         android:title="Search"
         android:icon="@drawable/nav_search"
-        app:showAsAction="ifRoom"
-        android:id="@+id/search"
+        app:showAsAction="always|collapseActionView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:theme="@style/SearchViewStyle"
         />
     <item
         android:title="Scanner"
