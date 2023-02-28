@@ -21,34 +21,30 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.product_sales_application.models.Cart;
-import com.example.product_sales_application.models.Product;
-import com.example.product_sales_application.adapters.CartAdapter;
 import com.example.product_sales_application.R;
+import com.example.product_sales_application.adapters.OrderDetailAdapter;
+import com.example.product_sales_application.models.Cart;
+import com.example.product_sales_application.models.Order;
 import com.google.android.material.navigation.NavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import java.util.ArrayList;
-
-public class CartActivity extends AppCompatActivity {
+public class HistoryDetailActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
-    private CartAdapter cartAdapter;
-    private RecyclerView cartListView;
-    private  Button btnConfirmCart;
-    private Button btnCancel;
+    private OrderDetailAdapter orderDetailAdapter;
+    private RecyclerView orderDetailCardView;
+    private  Button btnBack;
+    private TextView total;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cart);
-        btnConfirmCart = (Button)findViewById(R.id.btn_confirm_card);
-        btnCancel = (Button)findViewById(R.id.btn_cancel);
+        setContentView(R.layout.activity_history_detail);
 
-        drawerLayout = findViewById(R.id.drawer_layout_cart);
+        drawerLayout = findViewById(R.id.drawer_layout_order);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
@@ -59,12 +55,12 @@ public class CartActivity extends AppCompatActivity {
             switch (item.getItemId()){
                 case R.id.login:{
                     drawerLayout.close();
-                    startActivity(new Intent(CartActivity.this, LoginActivity.class));
+                    startActivity(new Intent(HistoryDetailActivity.this, LoginActivity.class));
                     return true;
                 }
                 case R.id.home:{
                     drawerLayout.close();
-                    startActivity(new Intent(CartActivity.this, HomeActivity.class));
+                    startActivity(new Intent(HistoryDetailActivity.this, HomeActivity.class));
                     finish();
                     return true;
                 }
@@ -72,38 +68,25 @@ public class CartActivity extends AppCompatActivity {
             return true;
         });
 
-        ArrayList<Product> productList = new ArrayList<Product>();
-        productList.add(new Product(1,"Product1 1",  R.drawable.image, 100f,1,"Description of product 2"));
-        productList.add(new Product(2,"Product1 2",  R.drawable.image, 100f,1,"Description of product 2"));
-        productList.add(new Product(3,"Product1 3",  R.drawable.image, 100f,1,"Description of product 2"));
-        productList.add(new Product(1,"Product1 1",  R.drawable.image, 100f,1,"Description of product 2"));
-        productList.add(new Product(2,"Product1 2",  R.drawable.image, 100f,1,"Description of product 2"));
+        Cart cart =  (Cart)getIntent().getSerializableExtra("cart");
+        Order order = new Order(1,cart);
+        OrderDetailAdapter orderDetailAdapter = new OrderDetailAdapter(order);
 
-        Cart cart = new Cart(productList);
-
-        cartAdapter = new CartAdapter(cart);
-        cartListView = findViewById(R.id.recycler_view_cart);
-        cartListView.setLayoutManager(new GridLayoutManager(this, 1));
-        cartListView.setAdapter(cartAdapter);
-        cartListView.setNestedScrollingEnabled(true);
+        orderDetailCardView = findViewById(R.id.recycler_view_cart);
+        orderDetailCardView.setLayoutManager(new GridLayoutManager(this, 1));
+        orderDetailCardView.setAdapter(orderDetailAdapter);
+        orderDetailCardView.setNestedScrollingEnabled(true);
 
 
+        total = (TextView)findViewById(R.id.tv_invoice_total);
 
-        btnConfirmCart.setOnClickListener(new View.OnClickListener() {
+        total.setText(String.format( "Tổng tiền: " + "%.2f VND", order.getCart().getTotalPrice()) );
+
+        btnBack = (Button)findViewById(R.id.btn_cancel);
+        btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(CartActivity.this, OrderActivity.class);
-
-
-                intent.putExtra("cart", cart);
-                startActivity(intent);
-            }
-        });
-
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
+                onBackPressed(); // Quay trở lại Activity trước đó
             }
         });
     }
@@ -116,7 +99,7 @@ public class CartActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Intent intent = new Intent(CartActivity.this, ProductListActivity.class);
+                Intent intent = new Intent(HistoryDetailActivity.this, ProductListActivity.class);
                 intent.putExtra("query", query);
                 startActivity(intent);
                 finish();
@@ -181,7 +164,7 @@ public class CartActivity extends AppCompatActivity {
             if (result.getContents() == null) {
                 Toast.makeText(getBaseContext(), "Canceled", Toast.LENGTH_LONG);
             } else {
-                Intent intent = new Intent(CartActivity.this, ProductDetailActivity.class);
+                Intent intent = new Intent(HistoryDetailActivity.this, ProductDetailActivity.class);
                 intent.putExtra("productName", result.getContents());
                 activityResultLauncher.launch(intent);
             }
