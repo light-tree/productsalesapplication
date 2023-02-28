@@ -32,6 +32,13 @@
                 android:text="@string/cart"
                 android:textSize="16dp"
                 android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/alert_empty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Giỏ hàng trống"
+                android:gravity="center"
+                />
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

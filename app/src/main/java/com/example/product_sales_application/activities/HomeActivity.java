@@ -157,6 +157,7 @@ public class HomeActivity extends AppCompatActivity {
         View.OnClickListener onClick = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 startActivity(new Intent(HomeActivity.this, ProductListActivity.class));
                 finish();
             }
@@ -175,7 +176,10 @@ public class HomeActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                // Xử lý khi submit search query
+                Intent intent = new Intent(HomeActivity.this, ProductListActivity.class);
+                intent.putExtra("query", query);
+                startActivity(intent);
+                finish();
                 return false;
             }
 

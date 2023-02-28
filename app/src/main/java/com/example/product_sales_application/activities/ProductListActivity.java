@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,8 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.product_sales_application.R;
@@ -32,6 +35,7 @@ import java.util.List;
 
 public class ProductListActivity extends AppCompatActivity {
 
+
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
@@ -41,6 +45,11 @@ public class ProductListActivity extends AppCompatActivity {
     private List<Product> productList;
     private ProductTypeAdapter productTypeAdapter;
     private ProductAdapter productAdapter;
+
+    private TextView query;
+    private TextView type;
+
+    public static String textQueryStatic = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,17 +84,21 @@ public class ProductListActivity extends AppCompatActivity {
         productRecycler = (RecyclerView) findViewById(R.id.product_recycler);
 
         productTypeDomainList = new ArrayList<>();
-        productTypeDomainList.add(new ProductTypeDomain(1, "Product1 1", ""));
-        productTypeDomainList.add(new ProductTypeDomain(2, "Product1 2", ""));
-        productTypeDomainList.add(new ProductTypeDomain(3, "Product1 3", ""));
-        productTypeDomainList.add(new ProductTypeDomain(4, "Product1 4", ""));
-        productTypeDomainList.add(new ProductTypeDomain(5, "Product1 5", ""));
+        productTypeDomainList.add(new ProductTypeDomain(1, "Tất cả", ""));
+        productTypeDomainList.add(new ProductTypeDomain(2, getString(R.string.product_type_1), ""));
+        productTypeDomainList.add(new ProductTypeDomain(3, getString(R.string.product_type_2), ""));
+        productTypeDomainList.add(new ProductTypeDomain(4, getString(R.string.product_type_3), ""));
+        productTypeDomainList.add(new ProductTypeDomain(5, getString(R.string.product_type_4), ""));
 
         productList = new ArrayList<>();
         productList.add(new Product(1, "Iphone10", 100f));
         productList.add(new Product(2, "Iphone11", 110f));
         productList.add(new Product(3, "Iphone12", 120f));
         productList.add(new Product(4, "Iphone13", 130f));
+        productList.add(new Product(5, "Iphone14", 100f));
+        productList.add(new Product(6, "Iphone15", 110f));
+        productList.add(new Product(7, "Iphone16", 120f));
+        productList.add(new Product(8, "Iphone17", 130f));
 
         productTypeAdapter = new ProductTypeAdapter(productTypeDomainList);
         productTypeView.setAdapter(productTypeAdapter);
@@ -97,11 +110,42 @@ public class ProductListActivity extends AppCompatActivity {
         productRecycler.setAdapter(productAdapter);
         productRecycler.setLayoutManager(new GridLayoutManager(this, 2));
 
+        query = findViewById(R.id.query);
+        type = findViewById(R.id.type);
+
+        String textQuery = getIntent().getStringExtra("query");
+        if(!TextUtils.isEmpty(textQuery)){
+            textQueryStatic = getIntent().getStringExtra("query");
+        }
+        if(!TextUtils.isEmpty(textQueryStatic)) query.setText("Từ khóa: " + textQueryStatic);
+
+        String textType = getIntent().getStringExtra("type");
+        if(!TextUtils.isEmpty(textType)) type.setText("Loại sản phẩm: " + textType);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_nav, menu);
+        MenuItem searchItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Intent intent = new Intent(ProductListActivity.this, ProductListActivity.class);
+//                intent.putExtra("query", ((TextView)findViewById(R.id.query)).getText().toString().substring(8));
+                intent.putExtra("query", query);
+                intent.putExtra("type", ((TextView)findViewById(R.id.type)).getText().toString().substring(14));
+                startActivity(intent);
+                finish();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Xử lý khi thay đổi nội dung search query
+                return false;
+            }
+        });
         return super.onCreateOptionsMenu(menu);
     }
 
