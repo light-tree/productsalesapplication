@@ -26,4 +26,5 @@
     <string name="product_list">Danh sách sản phẩm</string>
     <string name="customer_information">Thông tin khách hàng</string>
     <string name="cart">Giỏ hàng</string>
+    <string name="order_history">Lịch sử mua hàng</string>
 </resources>

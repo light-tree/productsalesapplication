@@ -25,9 +25,12 @@ import com.example.product_sales_application.R;
 import com.example.product_sales_application.adapters.OrderDetailAdapter;
 import com.example.product_sales_application.models.Cart;
 import com.example.product_sales_application.models.Order;
+import com.example.product_sales_application.models.Product;
 import com.google.android.material.navigation.NavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+
+import java.util.ArrayList;
 
 public class HistoryDetailActivity extends AppCompatActivity {
 
@@ -68,7 +71,15 @@ public class HistoryDetailActivity extends AppCompatActivity {
             return true;
         });
 
-        Cart cart =  (Cart)getIntent().getSerializableExtra("cart");
+//        Cart cart =  (Cart)getIntent().getSerializableExtra("cart");
+        ArrayList<Product> productList = new ArrayList<Product>();
+        productList.add(new Product(1,"Product1 1",  R.drawable.image, 100f,1,"Description of product 2"));
+        productList.add(new Product(2,"Product1 2",  R.drawable.image, 100f,1,"Description of product 2"));
+        productList.add(new Product(3,"Product1 3",  R.drawable.image, 100f,1,"Description of product 2"));
+        productList.add(new Product(1,"Product1 1",  R.drawable.image, 100f,1,"Description of product 2"));
+        productList.add(new Product(2,"Product1 2",  R.drawable.image, 100f,1,"Description of product 2"));
+
+        Cart cart = new Cart(productList);
         Order order = new Order(1,cart);
         OrderDetailAdapter orderDetailAdapter = new OrderDetailAdapter(order);
 
