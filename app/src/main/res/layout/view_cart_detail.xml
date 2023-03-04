@@ -118,6 +118,7 @@
         android:layout_weight="2"
         android:backgroundTint="#FF0E57"
         android:text="Xóa"
+        android:textSize="13dp"
         />
 
 </LinearLayout>

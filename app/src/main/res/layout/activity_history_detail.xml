@@ -90,8 +90,7 @@
                 android:id="@+id/tv_invoice_total"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="end"
-                android:textSize="24dp"
+                android:textSize="16dp"
                 android:text="Tổng"
                 android:textStyle="bold"/>
 

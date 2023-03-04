@@ -8,4 +8,8 @@
         android:id="@+id/login"
         android:title="@string/login">
     </item>
+    <item
+        android:id="@+id/order_history"
+        android:title="@string/order_history">
+    </item>
 </menu>
