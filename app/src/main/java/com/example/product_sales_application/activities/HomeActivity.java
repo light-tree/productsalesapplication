@@ -4,44 +4,39 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.ActionBar;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
-import android.nfc.Tag;
 import android.os.Bundle;
-import android.se.omapi.Session;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import androidx.appcompat.widget.SearchView;
-import android.widget.TextView;
+
 import android.widget.Toast;
 
 import com.example.product_sales_application.R;
 import com.example.product_sales_application.adapters.ProductAdapter;
 import com.example.product_sales_application.adapters.ProductTypeAdapter;
+import com.example.product_sales_application.api.ProductApi;
 import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.models.ProductTypeDomain;
-import com.example.product_sales_application.models.RequestCode;
 import com.google.android.material.navigation.NavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class HomeActivity extends AppCompatActivity {
@@ -87,18 +82,7 @@ public class HomeActivity extends AppCompatActivity {
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
 
-    private List<Product> products = new ArrayList<>(Arrays.asList(
-            new Product(1, "Product1 A", 100),
-            new Product(2, "Product1 B", 200),
-            new Product(3, "Product1 C", 100),
-            new Product(4, "Product1 D", 120),
-            new Product(5, "Product1 E", 150),
-            new Product(6, "Product1 F", 250),
-            new Product(7, "Product1 G", 110),
-            new Product(8, "Product1 H", 90),
-            new Product(9, "Product1 I", 90),
-            new Product(10, "Product1 J", 120)
-    ));
+    private List<Product> products;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +112,8 @@ public class HomeActivity extends AppCompatActivity {
             return true;
         });
 
+        GetProduct();
+
         productTypeView = findViewById(R.id.product_type_recycler);
         productTypeDomainList = new ArrayList<>();
         productTypeDomainList.add(new ProductTypeDomain(1, getResources().getString(R.string.product_type_1), ""));
@@ -140,20 +126,6 @@ public class HomeActivity extends AppCompatActivity {
         productTypeView.setAdapter(productTypeAdapter);
         LinearLayoutManager horizontalLayoutManagaer = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         productTypeView.setLayoutManager(horizontalLayoutManagaer);
-
-        productAdapter = new ProductAdapter(products);
-        productListRecyclerView1 = findViewById(R.id.product_list_1);
-        ;
-        productListRecyclerView1.setAdapter(productAdapter);
-        productListRecyclerView1.setNestedScrollingEnabled(false);
-
-        productListRecyclerView2 = findViewById(R.id.product_list_2);
-        productListRecyclerView2.setAdapter(productAdapter);
-        productListRecyclerView2.setNestedScrollingEnabled(false);
-
-        productListRecyclerView3 = findViewById(R.id.product_list_3);
-        productListRecyclerView3.setAdapter(productAdapter);
-        productListRecyclerView3.setNestedScrollingEnabled(false);
 
         button1 = findViewById(R.id.button_1);
         button2 = findViewById(R.id.button_2);
@@ -240,5 +212,37 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    private void GetProduct() {
+        ProductApi.productApi.getAllProductWithPaging().enqueue(
+                new Callback<List<Product>>() {
+                    @Override
+                    public void onResponse(retrofit2.Call<List<Product>> call, Response<List<Product>> response) {
+                        products = response.body();
+                        buildRecycler();
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Product>> call, Throwable t) {
+                        products = new ArrayList<>();
+                    }
+                }
+        );
+    }
+
+    public void buildRecycler(){
+        productAdapter = new ProductAdapter(products);
+        productListRecyclerView1 = findViewById(R.id.product_list_1);
+        productListRecyclerView1.setAdapter(productAdapter);
+        productListRecyclerView1.setNestedScrollingEnabled(false);
+
+        productListRecyclerView2 = findViewById(R.id.product_list_2);
+        productListRecyclerView2.setAdapter(productAdapter);
+        productListRecyclerView2.setNestedScrollingEnabled(false);
+
+        productListRecyclerView3 = findViewById(R.id.product_list_3);
+        productListRecyclerView3.setAdapter(productAdapter);
+        productListRecyclerView3.setNestedScrollingEnabled(false);
     }
 }

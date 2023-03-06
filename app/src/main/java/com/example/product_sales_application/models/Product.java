@@ -3,11 +3,22 @@ package com.example.product_sales_application.models;
 import android.graphics.drawable.Drawable;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Product implements Serializable {
     private int id;
     private String name;
     private int imageResource;
+    private String url;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     private String description;
     private double price;
     private  int quantity;
@@ -70,9 +81,8 @@ public class Product implements Serializable {
         return name;
     }
 
-
-
     public String getDescription() {
         return description;
     }
+
 }
