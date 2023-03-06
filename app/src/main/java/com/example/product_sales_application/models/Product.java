@@ -10,6 +10,18 @@ public class Product implements Serializable {
     private String name;
     private int imageResource;
     private String url;
+    private String description;
+    private double price;
+    private  int quantity;
+    private long productTypeId;
+
+    public long getProductTypeId() {
+        return productTypeId;
+    }
+
+    public void setProductTypeId(long productTypeId) {
+        this.productTypeId = productTypeId;
+    }
 
     public String getUrl() {
         return url;
@@ -18,10 +30,6 @@ public class Product implements Serializable {
     public void setUrl(String url) {
         this.url = url;
     }
-
-    private String description;
-    private double price;
-    private  int quantity;
 
     public int getImageResource() {
         return imageResource;
