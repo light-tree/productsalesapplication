@@ -22,8 +22,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.product_sales_application.R;
+import com.example.product_sales_application.adapters.OrderDetailAdapter;
 import com.example.product_sales_application.adapters.ProductAdapter;
 import com.example.product_sales_application.adapters.ProductTypeAdapter;
+import com.example.product_sales_application.api.ProductApi;
+import com.example.product_sales_application.models.Cart;
 import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.models.ProductTypeDomain;
 import com.google.android.material.navigation.NavigationView;
@@ -32,6 +35,10 @@ import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProductListActivity extends AppCompatActivity {
 
@@ -49,12 +56,18 @@ public class ProductListActivity extends AppCompatActivity {
     private TextView query;
     private TextView type;
 
+    long productTypeId;
+    int page = 1, limit = 10;
+
     public static String textQueryStatic = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_list);
+
+
+
 
         drawerLayout = findViewById(R.id.drawer_layout_product_list);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
@@ -90,15 +103,10 @@ public class ProductListActivity extends AppCompatActivity {
         productTypeDomainList.add(new ProductTypeDomain(4, getString(R.string.product_type_3), ""));
         productTypeDomainList.add(new ProductTypeDomain(5, getString(R.string.product_type_4), ""));
 
-        productList = new ArrayList<>();
-        productList.add(new Product(1, "Iphone10", 100f));
-        productList.add(new Product(2, "Iphone11", 110f));
-        productList.add(new Product(3, "Iphone12", 120f));
-        productList.add(new Product(4, "Iphone13", 130f));
-        productList.add(new Product(5, "Iphone14", 100f));
-        productList.add(new Product(6, "Iphone15", 110f));
-        productList.add(new Product(7, "Iphone16", 120f));
-        productList.add(new Product(8, "Iphone17", 130f));
+        productTypeId = getIntent().getLongExtra("typeId", 0);
+
+        GetProductsByType();
+
 
         productTypeAdapter = new ProductTypeAdapter(productTypeDomainList);
         productTypeView.setAdapter(productTypeAdapter);
@@ -200,10 +208,29 @@ public class ProductListActivity extends AppCompatActivity {
             } else {
                 Intent intent = new Intent(ProductListActivity.this, ProductDetailActivity.class);
                 intent.putExtra("productName", result.getContents());
+
                 activityResultLauncher.launch(intent);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+
+    private void GetProductsByType() {
+        ProductApi.productApi.getAllProductByTypeWithPaging(productTypeId, page,limit ).enqueue(
+                new Callback<List<Product>>() {
+                    @Override
+                    public void onResponse(retrofit2.Call<List<Product>> call, Response<List<Product>> response) {
+                        productList = response.body();
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Product>> call, Throwable t) {
+                        productList = new ArrayList<>();
+                    }
+                }
+        );
     }
 }
