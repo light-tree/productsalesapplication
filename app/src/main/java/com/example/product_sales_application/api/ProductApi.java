@@ -26,11 +26,21 @@ public interface ProductApi {
     @GET("product")
     Call<List<Product>> getAllProduct();
 
+    @GET("product")
+    Call<List<Product>> getAllProductByType(@Query("productTypeId") String productTypeId);
+
     @GET("product/{id}")
     Call<Product> getProductById(@Path("id") int id);
 
     @GET("product")
     Call<List<Product>> getAllProductByTypeWithPaging(
+            @Query("productTypeId") String productTypeId,
+            @Query("page") int page,
+            @Query("limit") int limit );
+
+    @GET("product")
+    Call<List<Product>> getAllProductByNameAndTypeWithPaging(
+            @Query("productTypeId") String name,
             @Query("productTypeId") String productTypeId,
             @Query("page") int page,
             @Query("limit") int limit );
