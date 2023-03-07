@@ -29,7 +29,7 @@ public interface ProductApi {
     @GET("product/{id}")
     Call<Product> getProductById(@Path("id") int id);
 
-    @GET("productdđ")
+    @GET("product")
     Call<List<Product>> getAllProductByTypeWithPaging(@Query("productTypeId") long productTypeId,
                                                       @Query("page") int page,
                                                       @Query("limit") int limit );
