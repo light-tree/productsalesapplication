@@ -182,7 +182,7 @@ public class HistoryDetailActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(), "Canceled", Toast.LENGTH_LONG);
             } else {
                 Intent intent = new Intent(HistoryDetailActivity.this, ProductDetailActivity.class);
-                intent.putExtra("productName", result.getContents());
+                intent.putExtra("productId", result.getContents());
                 activityResultLauncher.launch(intent);
             }
         } else {

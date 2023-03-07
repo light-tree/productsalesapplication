@@ -212,7 +212,7 @@ public class ProductListActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(), "Canceled", Toast.LENGTH_LONG);
             } else {
                 Intent intent = new Intent(ProductListActivity.this, ProductDetailActivity.class);
-                intent.putExtra("productName", result.getContents());
+                intent.putExtra("productId", result.getContents());
                 activityResultLauncher.launch(intent);
             }
         } else {
