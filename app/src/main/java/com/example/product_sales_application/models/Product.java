@@ -13,13 +13,13 @@ public class Product implements Serializable {
     private String description;
     private double price;
     private  int quantity;
-    private long productTypeId;
+    private String productTypeId;
 
-    public long getProductTypeId() {
+    public String getProductTypeId() {
         return productTypeId;
     }
 
-    public void setProductTypeId(long productTypeId) {
+    public void setProductTypeId(String productTypeId) {
         this.productTypeId = productTypeId;
     }
 

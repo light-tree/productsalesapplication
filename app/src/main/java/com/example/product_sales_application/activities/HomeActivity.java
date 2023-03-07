@@ -41,35 +41,14 @@ import retrofit2.Response;
 
 public class HomeActivity extends AppCompatActivity {
 
-    //    private CoordinatorLayout drawerLayout;
-    //    private Toolbar toolbar;
-    private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result != null) {
-//                       if(result.getResultCode() == RequestCode.SCAN_HOME){
-//                           if (result.getData()== null) {
-//                               Toast.makeText(getBaseContext(), "Canceled", Toast.LENGTH_LONG);
-//                           } else {
-//                               Intent resultData = result.getData();
-////                               resultData.ge
-//                               Intent intent = new Intent(HomeActivity.this, ProductDetailActivity.class);
-////                               intent.putExtra("ProductId", )
-//                               activityResultLauncher.launch(intent);
-//                           }
-//                       }
-                    } else {
-                    }
-                }
-            }
-    );
+
     private RecyclerView productTypeView;
     private List<ProductTypeDomain> productTypeDomainList;
     private ProductTypeAdapter productTypeAdapter;
 
-    private ProductAdapter productAdapter;
+    private ProductAdapter productAdapter1;
+    private ProductAdapter productAdapter2;
+    private ProductAdapter productAdapter3;
     private RecyclerView productListRecyclerView1;
     private RecyclerView productListRecyclerView2;
     private RecyclerView productListRecyclerView3;
@@ -82,7 +61,9 @@ public class HomeActivity extends AppCompatActivity {
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
 
-    private List<Product> products;
+    private List<Product> products1;
+    private List<Product> products2;
+    private List<Product> products3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,22 +86,23 @@ public class HomeActivity extends AppCompatActivity {
                 }
                 case R.id.order_history: {
                     drawerLayout.close();
-                    activityResultLauncher.launch(new Intent(HomeActivity.this, OrderHistoryActivity.class));
+                    startActivity(new Intent(HomeActivity.this, OrderHistoryActivity.class));
                     return true;
                 }
             }
             return true;
         });
 
-        GetProduct();
+        getProduct();
 
         productTypeView = findViewById(R.id.product_type_recycler);
         productTypeDomainList = new ArrayList<>();
-        productTypeDomainList.add(new ProductTypeDomain(1, getResources().getString(R.string.product_type_1), ""));
-        productTypeDomainList.add(new ProductTypeDomain(2, getResources().getString(R.string.product_type_2), ""));
-        productTypeDomainList.add(new ProductTypeDomain(3, getResources().getString(R.string.product_type_3), ""));
-        productTypeDomainList.add(new ProductTypeDomain(4, getResources().getString(R.string.product_type_4), ""));
-        productTypeDomainList.add(new ProductTypeDomain(5, getResources().getString(R.string.product_type_5), ""));
+        productTypeDomainList.add(new ProductTypeDomain(1, "Tất cả", ""));
+        productTypeDomainList.add(new ProductTypeDomain(2, getString(R.string.product_type_1), ""));
+        productTypeDomainList.add(new ProductTypeDomain(3, getString(R.string.product_type_2), ""));
+        productTypeDomainList.add(new ProductTypeDomain(4, getString(R.string.product_type_3), ""));
+        productTypeDomainList.add(new ProductTypeDomain(5, getString(R.string.product_type_4), ""));
+        productTypeDomainList.add(new ProductTypeDomain(6, getString(R.string.product_type_5), ""));
 
         productTypeAdapter = new ProductTypeAdapter(productTypeDomainList);
         productTypeView.setAdapter(productTypeAdapter);
@@ -131,18 +113,31 @@ public class HomeActivity extends AppCompatActivity {
         button2 = findViewById(R.id.button_2);
         button3 = findViewById(R.id.button_3);
 
-        View.OnClickListener onClick = new View.OnClickListener() {
+        Intent intent = new Intent(HomeActivity.this, ProductListActivity.class);
+        button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                startActivity(new Intent(HomeActivity.this, ProductListActivity.class));
+                intent.putExtra("type", getString(R.string.product_type_1));
+                startActivity(intent);
                 finish();
             }
-        };
-
-        button1.setOnClickListener(onClick);
-        button2.setOnClickListener(onClick);
-        button3.setOnClickListener(onClick);
+        });
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent.putExtra("type", getString(R.string.product_type_2));
+                startActivity(intent);
+                finish();
+            }
+        });
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent.putExtra("type", getString(R.string.product_type_3));
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
     @Override
@@ -192,57 +187,77 @@ public class HomeActivity extends AppCompatActivity {
         intentIntegrator.setPrompt("Scan a barcode for QRcode");
         intentIntegrator.setOrientationLocked(false);
         intentIntegrator.setCameraId(0);
+//        intentIntegrator.setRequestCode(1);
         intentIntegrator.initiateScan();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-
+        super.onActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() == null) {
                 Toast.makeText(getBaseContext(), "Canceled", Toast.LENGTH_LONG);
             } else {
                 Intent intent = new Intent(HomeActivity.this, ProductDetailActivity.class);
-                intent.putExtra("productName", result.getContents());
-                activityResultLauncher.launch(intent);
+                intent.putExtra("productId", result.getContents());
+                startActivity(intent);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
-    private void GetProduct() {
-        ProductApi.productApi.getAllProductWithPaging().enqueue(
+    private void getProduct() {
+        ProductApi.productApi.getAllProductByTypeWithPaging(getString(R.string.product_type_1),1,6).enqueue(
                 new Callback<List<Product>>() {
                     @Override
                     public void onResponse(retrofit2.Call<List<Product>> call, Response<List<Product>> response) {
-                        products = response.body();
-                        buildRecycler();
+                        products1 = response.body();
+                        buildRecycler(productAdapter1, products1, productListRecyclerView1, R.id.product_list_1);
                     }
 
                     @Override
                     public void onFailure(Call<List<Product>> call, Throwable t) {
-                        products = new ArrayList<>();
+                        products1 = new ArrayList<>();
+                    }
+                }
+        );
+        ProductApi.productApi.getAllProductByTypeWithPaging(getString(R.string.product_type_2),1,6).enqueue(
+                new Callback<List<Product>>() {
+                    @Override
+                    public void onResponse(retrofit2.Call<List<Product>> call, Response<List<Product>> response) {
+                        products2 = response.body();
+                        buildRecycler(productAdapter2, products2, productListRecyclerView2, R.id.product_list_2);
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Product>> call, Throwable t) {
+                        products2 = new ArrayList<>();
+                    }
+                }
+        );
+        ProductApi.productApi.getAllProductByTypeWithPaging(getString(R.string.product_type_3),1,6).enqueue(
+                new Callback<List<Product>>() {
+                    @Override
+                    public void onResponse(retrofit2.Call<List<Product>> call, Response<List<Product>> response) {
+                        products3 = response.body();
+                        buildRecycler(productAdapter3, products3, productListRecyclerView3, R.id.product_list_3);
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Product>> call, Throwable t) {
+                        products3 = new ArrayList<>();
                     }
                 }
         );
     }
 
-    public void buildRecycler(){
+    public void buildRecycler(ProductAdapter productAdapter, List<Product> products, RecyclerView recyclerView, int id){
         productAdapter = new ProductAdapter(products);
-        productListRecyclerView1 = findViewById(R.id.product_list_1);
-        productListRecyclerView1.setAdapter(productAdapter);
-        productListRecyclerView1.setNestedScrollingEnabled(false);
-
-        productListRecyclerView2 = findViewById(R.id.product_list_2);
-        productListRecyclerView2.setAdapter(productAdapter);
-        productListRecyclerView2.setNestedScrollingEnabled(false);
-
-        productListRecyclerView3 = findViewById(R.id.product_list_3);
-        productListRecyclerView3.setAdapter(productAdapter);
-        productListRecyclerView3.setNestedScrollingEnabled(false);
+        recyclerView = findViewById(id);
+        recyclerView.setAdapter(productAdapter);
+        recyclerView.setNestedScrollingEnabled(false);
     }
 }

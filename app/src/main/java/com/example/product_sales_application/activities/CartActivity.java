@@ -70,6 +70,11 @@ public class CartActivity extends AppCompatActivity {
                     finish();
                     return true;
                 }
+                case R.id.order_history: {
+                    drawerLayout.close();
+                    activityResultLauncher.launch(new Intent(CartActivity.this, OrderHistoryActivity.class));
+                    return true;
+                }
             }
             return true;
         });
@@ -163,6 +168,7 @@ public class CartActivity extends AppCompatActivity {
         IntentIntegrator intentIntegrator = new IntentIntegrator(this);
         intentIntegrator.setPrompt("Scan a barcode for QRcode");
         intentIntegrator.setOrientationLocked(false);
+        intentIntegrator.setRequestCode(1);
         intentIntegrator.setCameraId(0);
         intentIntegrator.initiateScan();
     }

@@ -7,6 +7,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
+import android.hardware.display.DeviceProductInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,8 +16,17 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.product_sales_application.R;
+import com.example.product_sales_application.api.ProductApi;
+import com.example.product_sales_application.models.Product;
 import com.google.android.material.navigation.NavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProductDetailActivity extends AppCompatActivity {
 
@@ -29,6 +39,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private TextView tvDescription;
     private TextView tvPrice;
 
+    private Product product;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,13 +48,8 @@ public class ProductDetailActivity extends AppCompatActivity {
         tvPrice = findViewById(R.id.price);
         tvDescription = findViewById(R.id.description);
 
-
-        tvProductName.setText(getIntent().getStringExtra("productName"));
-        tvPrice.setText(getIntent().getStringExtra("productPrice"));
-        tvDescription.setText(getIntent().getStringExtra("productDescription"));
-
-
-
+        int id = Integer.parseInt(getIntent().getStringExtra("productId"));
+        getProductById(id);
 
         drawerLayout = findViewById(R.id.drawer_layout_product_detail);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
@@ -63,6 +69,11 @@ public class ProductDetailActivity extends AppCompatActivity {
                     drawerLayout.close();
                     startActivity(new Intent(ProductDetailActivity.this, HomeActivity.class));
                     finish();
+                    return true;
+                }
+                case R.id.order_history: {
+                    drawerLayout.close();
+                    startActivity((new Intent(ProductDetailActivity.this, OrderHistoryActivity.class)));
                     return true;
                 }
             }
@@ -85,6 +96,25 @@ public class ProductDetailActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void getProductById(int productId) {
+        ProductApi.productApi.getProductById(productId).enqueue(
+                new Callback<Product>() {
+                    @Override
+                    public void onResponse(retrofit2.Call<Product> call, Response<Product> response) {
+                        product = response.body();
+                        tvProductName.setText(product.getName());
+                        tvPrice.setText(""+product.getPrice()+" VND");
+                        tvDescription.setText(product.getDescription());
+                    }
+
+                    @Override
+                    public void onFailure(Call<Product> call, Throwable t) {
+                        product = null;
+                    }
+                }
+        );
     }
 
     @Override
@@ -152,6 +182,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         IntentIntegrator intentIntegrator = new IntentIntegrator(this);
         intentIntegrator.setPrompt("Scan a barcode for QRcode");
         intentIntegrator.setOrientationLocked(false);
+        intentIntegrator.setRequestCode(1);
         intentIntegrator.setCameraId(0);
         intentIntegrator.initiateScan();
     }

@@ -58,7 +58,7 @@ public class ProductTypeAdapter extends RecyclerView.Adapter<ProductTypeAdapter.
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, ProductListActivity.class);
-                intent.putExtra("typeId", productTypeDomain.getId());
+                intent.putExtra("type", productTypeDomain.getName());
                 context.startActivity(intent);
 
                 ((Activity)context).finish();

@@ -24,13 +24,19 @@ public interface ProductApi {
             .create(ProductApi.class);
 
     @GET("product")
-    Call<List<Product>> getAllProductWithPaging();
+    Call<List<Product>> getAllProduct();
 
     @GET("product/{id}")
     Call<Product> getProductById(@Path("id") int id);
 
     @GET("product")
-    Call<List<Product>> getAllProductByTypeWithPaging(@Query("productTypeId") long productTypeId,
-                                                      @Query("page") int page,
-                                                      @Query("limit") int limit );
+    Call<List<Product>> getAllProductByTypeWithPaging(
+            @Query("productTypeId") String productTypeId,
+            @Query("page") int page,
+            @Query("limit") int limit );
+
+    @GET("product")
+    Call<List<Product>> getAllProductWithPaging(
+            @Query("page") int page,
+            @Query("limit") int limit );
 }

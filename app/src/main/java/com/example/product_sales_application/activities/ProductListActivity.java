@@ -57,8 +57,7 @@ public class ProductListActivity extends AppCompatActivity {
     private TextView query;
     private TextView type;
 
-    long productTypeId;
-    int page = 1, limit = 2;
+    int page = 1, limit = 6;
 
     public static String textQueryStatic = "";
 
@@ -66,7 +65,6 @@ public class ProductListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_list);
-        limit = 2;
         viewMoreButton = findViewById(R.id.view_more_button);
         drawerLayout = findViewById(R.id.drawer_layout_product_list);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
@@ -88,6 +86,11 @@ public class ProductListActivity extends AppCompatActivity {
                     finish();
                     return true;
                 }
+                case R.id.order_history: {
+                    drawerLayout.close();
+                    startActivity((new Intent(ProductListActivity.this, OrderHistoryActivity.class)));
+                    return true;
+                }
             }
             return true;
         });
@@ -101,8 +104,7 @@ public class ProductListActivity extends AppCompatActivity {
         productTypeDomainList.add(new ProductTypeDomain(3, getString(R.string.product_type_2), ""));
         productTypeDomainList.add(new ProductTypeDomain(4, getString(R.string.product_type_3), ""));
         productTypeDomainList.add(new ProductTypeDomain(5, getString(R.string.product_type_4), ""));
-
-        productTypeId = getIntent().getLongExtra("typeId", 0);
+        productTypeDomainList.add(new ProductTypeDomain(6, getString(R.string.product_type_5), ""));
 
         GetProductsByType();
 
@@ -126,7 +128,7 @@ public class ProductListActivity extends AppCompatActivity {
         viewMoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                limit += 2;
+                limit += 6;
                 GetProductsByType();
             }
         });
@@ -180,6 +182,7 @@ public class ProductListActivity extends AppCompatActivity {
         IntentIntegrator intentIntegrator = new IntentIntegrator(this);
         intentIntegrator.setPrompt("Scan a barcode for QRcode");
         intentIntegrator.setOrientationLocked(false);
+        intentIntegrator.setRequestCode(1);
         intentIntegrator.setCameraId(0);
         intentIntegrator.initiateScan();
     }
@@ -219,22 +222,48 @@ public class ProductListActivity extends AppCompatActivity {
 
 
     private void GetProductsByType() {
-        ProductApi.productApi.getAllProductByTypeWithPaging(productTypeId, page, limit).enqueue(
-                new Callback<List<Product>>() {
-                    @Override
-                    public void onResponse(retrofit2.Call<List<Product>> call, Response<List<Product>> response) {
-                        productList = response.body();
+        String type = getIntent().getStringExtra("type");
+        if (TextUtils.isEmpty(type) || type.equals("Tất cả")){
+            ProductApi.productApi.getAllProductWithPaging(page, limit).enqueue(
+                    new Callback<List<Product>>() {
+                        @Override
+                        public void onResponse(retrofit2.Call<List<Product>> call, Response<List<Product>> response) {
+                            productList = response.body();
+                            if(!TextUtils.isEmpty(textQueryStatic))
+                                productList.stream().filter(product -> product.getName().contains(textQueryStatic));
+                            productAdapter = new ProductAdapter(productList);
+                            productRecycler.setAdapter(productAdapter);
+                            productRecycler.setLayoutManager(new GridLayoutManager(ProductListActivity.this, 2));
+                        }
 
-                        productAdapter = new ProductAdapter(productList);
-                        productRecycler.setAdapter(productAdapter);
-                        productRecycler.setLayoutManager(new GridLayoutManager(ProductListActivity.this, 2));
+                        @Override
+                        public void onFailure(Call<List<Product>> call, Throwable t) {
+                            productList = new ArrayList<>();
+                        }
                     }
+            );
+        }
+        else{
+            ProductApi.productApi.getAllProductByTypeWithPaging(type, page, limit).enqueue(
+                    new Callback<List<Product>>() {
+                        @Override
+                        public void onResponse(retrofit2.Call<List<Product>> call, Response<List<Product>> response) {
+                            productList = response.body();
+                            if(!TextUtils.isEmpty(textQueryStatic))
+                                productList.stream().filter(product -> product.getName().contains(textQueryStatic));
+                            productAdapter = new ProductAdapter(productList);
+                            productRecycler.setAdapter(productAdapter);
+                            productRecycler.setLayoutManager(new GridLayoutManager(ProductListActivity.this, 2));
+                        }
 
-                    @Override
-                    public void onFailure(Call<List<Product>> call, Throwable t) {
-                        productList = new ArrayList<>();
+                        @Override
+                        public void onFailure(Call<List<Product>> call, Throwable t) {
+                            productList = new ArrayList<>();
+                        }
                     }
-                }
-        );
+            );
+        }
     }
+
+
 }
