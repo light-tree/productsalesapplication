@@ -26,13 +26,24 @@ public class ProductDetailActivity extends AppCompatActivity {
     private Button buttonBack;
     private Button buttonAdd;
     private TextView tvProductName;
+    private TextView tvDescription;
+    private TextView tvPrice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
         tvProductName = findViewById(R.id.name);
+        tvPrice = findViewById(R.id.price);
+        tvDescription = findViewById(R.id.description);
+
+
         tvProductName.setText(getIntent().getStringExtra("productName"));
+        tvPrice.setText(getIntent().getStringExtra("productPrice"));
+        tvDescription.setText(getIntent().getStringExtra("productDescription"));
+
+
+
 
         drawerLayout = findViewById(R.id.drawer_layout_product_detail);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);

@@ -18,12 +18,17 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.product_sales_application.R;
+import com.example.product_sales_application.adapters.OrderDetailAdapter;
 import com.example.product_sales_application.adapters.ProductAdapter;
 import com.example.product_sales_application.adapters.ProductTypeAdapter;
+import com.example.product_sales_application.api.ProductApi;
+import com.example.product_sales_application.models.Cart;
 import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.models.ProductTypeDomain;
 import com.google.android.material.navigation.NavigationView;
@@ -33,9 +38,11 @@ import com.google.zxing.integration.android.IntentResult;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class ProductListActivity extends AppCompatActivity {
-
-
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
@@ -45,9 +52,13 @@ public class ProductListActivity extends AppCompatActivity {
     private List<Product> productList;
     private ProductTypeAdapter productTypeAdapter;
     private ProductAdapter productAdapter;
+    private Button viewMoreButton;
 
     private TextView query;
     private TextView type;
+
+    long productTypeId;
+    int page = 1, limit = 2;
 
     public static String textQueryStatic = "";
 
@@ -55,7 +66,8 @@ public class ProductListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_list);
-
+        limit = 2;
+        viewMoreButton = findViewById(R.id.view_more_button);
         drawerLayout = findViewById(R.id.drawer_layout_product_list);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);
@@ -64,13 +76,13 @@ public class ProductListActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.nav);
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()){
-                case R.id.login:{
+            switch (item.getItemId()) {
+                case R.id.login: {
                     drawerLayout.close();
                     startActivity(new Intent(ProductListActivity.this, LoginActivity.class));
                     return true;
                 }
-                case R.id.home:{
+                case R.id.home: {
                     drawerLayout.close();
                     startActivity(new Intent(ProductListActivity.this, HomeActivity.class));
                     finish();
@@ -90,37 +102,34 @@ public class ProductListActivity extends AppCompatActivity {
         productTypeDomainList.add(new ProductTypeDomain(4, getString(R.string.product_type_3), ""));
         productTypeDomainList.add(new ProductTypeDomain(5, getString(R.string.product_type_4), ""));
 
-        productList = new ArrayList<>();
-        productList.add(new Product(1, "Iphone10", 100f));
-        productList.add(new Product(2, "Iphone11", 110f));
-        productList.add(new Product(3, "Iphone12", 120f));
-        productList.add(new Product(4, "Iphone13", 130f));
-        productList.add(new Product(5, "Iphone14", 100f));
-        productList.add(new Product(6, "Iphone15", 110f));
-        productList.add(new Product(7, "Iphone16", 120f));
-        productList.add(new Product(8, "Iphone17", 130f));
+        productTypeId = getIntent().getLongExtra("typeId", 0);
+
+        GetProductsByType();
 
         productTypeAdapter = new ProductTypeAdapter(productTypeDomainList);
         productTypeView.setAdapter(productTypeAdapter);
         LinearLayoutManager horizontalLayoutManagaer = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         productTypeView.setLayoutManager(horizontalLayoutManagaer);
 
-
-        productAdapter = new ProductAdapter(productList);
-        productRecycler.setAdapter(productAdapter);
-        productRecycler.setLayoutManager(new GridLayoutManager(this, 2));
-
         query = findViewById(R.id.query);
         type = findViewById(R.id.type);
 
         String textQuery = getIntent().getStringExtra("query");
-        if(!TextUtils.isEmpty(textQuery)){
+        if (!TextUtils.isEmpty(textQuery)) {
             textQueryStatic = getIntent().getStringExtra("query");
         }
-        if(!TextUtils.isEmpty(textQueryStatic)) query.setText("Từ khóa: " + textQueryStatic);
+        if (!TextUtils.isEmpty(textQueryStatic)) query.setText("Từ khóa: " + textQueryStatic);
 
         String textType = getIntent().getStringExtra("type");
-        if(!TextUtils.isEmpty(textType)) type.setText("Loại sản phẩm: " + textType);
+        if (!TextUtils.isEmpty(textType)) type.setText("Loại sản phẩm: " + textType);
+
+        viewMoreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                limit += 2;
+                GetProductsByType();
+            }
+        });
     }
 
     @Override
@@ -134,7 +143,7 @@ public class ProductListActivity extends AppCompatActivity {
                 Intent intent = new Intent(ProductListActivity.this, ProductListActivity.class);
 //                intent.putExtra("query", ((TextView)findViewById(R.id.query)).getText().toString().substring(8));
                 intent.putExtra("query", query);
-                intent.putExtra("type", ((TextView)findViewById(R.id.type)).getText().toString().substring(14));
+                intent.putExtra("type", ((TextView) findViewById(R.id.type)).getText().toString().substring(14));
                 startActivity(intent);
                 finish();
                 return false;
@@ -153,7 +162,7 @@ public class ProductListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if(toggle.onOptionsItemSelected(item)){
+        if (toggle.onOptionsItemSelected(item)) {
             return true;
         }
 
@@ -200,10 +209,32 @@ public class ProductListActivity extends AppCompatActivity {
             } else {
                 Intent intent = new Intent(ProductListActivity.this, ProductDetailActivity.class);
                 intent.putExtra("productName", result.getContents());
+
                 activityResultLauncher.launch(intent);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+
+    private void GetProductsByType() {
+        ProductApi.productApi.getAllProductByTypeWithPaging(productTypeId, page, limit).enqueue(
+                new Callback<List<Product>>() {
+                    @Override
+                    public void onResponse(retrofit2.Call<List<Product>> call, Response<List<Product>> response) {
+                        productList = response.body();
+
+                        productAdapter = new ProductAdapter(productList);
+                        productRecycler.setAdapter(productAdapter);
+                        productRecycler.setLayoutManager(new GridLayoutManager(ProductListActivity.this, 2));
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Product>> call, Throwable t) {
+                        productList = new ArrayList<>();
+                    }
+                }
+        );
     }
 }

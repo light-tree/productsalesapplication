@@ -3,14 +3,33 @@ package com.example.product_sales_application.models;
 import android.graphics.drawable.Drawable;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Product implements Serializable {
     private int id;
     private String name;
     private int imageResource;
+    private String url;
     private String description;
     private double price;
     private  int quantity;
+    private long productTypeId;
+
+    public long getProductTypeId() {
+        return productTypeId;
+    }
+
+    public void setProductTypeId(long productTypeId) {
+        this.productTypeId = productTypeId;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     public int getImageResource() {
         return imageResource;
@@ -70,9 +89,8 @@ public class Product implements Serializable {
         return name;
     }
 
-
-
     public String getDescription() {
         return description;
     }
+
 }

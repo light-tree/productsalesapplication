@@ -69,6 +69,7 @@
                         android:textSize="20dp"
                         />
                     <TextView
+                        android:id="@+id/description"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="Dòng sản phẩm cao cấp\nDòng sản phẩm cao cấp\nDòng sản phẩm cao cấp\nDòng sản phẩm cao cấp\nDòng sản phẩm cao cấp\nDòng sản phẩm cao cấp\nDòng sản phẩm cao cấp"

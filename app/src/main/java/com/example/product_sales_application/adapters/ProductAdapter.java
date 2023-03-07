@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.product_sales_application.R;
+import com.example.product_sales_application.activities.HomeActivity;
 import com.example.product_sales_application.activities.ProductDetailActivity;
 import com.example.product_sales_application.activities.ProductListActivity;
 import com.example.product_sales_application.models.Product;
@@ -27,6 +28,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         public TextView name;
         public TextView price;
         public View view;
+        public TextView description;
 
         public ViewHolder (View viewProduct) {
             super(viewProduct);
@@ -34,6 +36,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             image = viewProduct.findViewById(R.id.image);
             name = viewProduct.findViewById(R.id.name);
             price = viewProduct.findViewById(R.id.price);
+            //description = viewProduct.findViewById(R.id.)
         }
     }
 
@@ -81,7 +84,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                context.startActivity(new Intent(context, ProductDetailActivity.class));
+
+                Intent intent = new Intent(context, ProductDetailActivity.class);
+                intent.putExtra("productName", product.getName());
+                intent.putExtra("productPrice", product.getPrice());
+                intent.putExtra("productDescription", product.getDescription());
+
+                context.startActivity(intent);
+
             }
         });
     }
