@@ -38,12 +38,12 @@ public interface ProductApi {
             @Query("page") int page,
             @Query("limit") int limit );
 
-    @GET("product")
-    Call<List<Product>> getAllProductByNameAndTypeWithPaging(
-            @Query("productTypeId") String name,
-            @Query("productTypeId") String productTypeId,
-            @Query("page") int page,
-            @Query("limit") int limit );
+//    @GET("product")
+//    Call<List<Product>> getAllProductByNameAndTypeWithPaging(
+//            @Query("productTypeId") String name,
+//            @Query("productTypeId") String productTypeId,
+//            @Query("page") int page,
+//            @Query("limit") int limit );
 
     @GET("product")
     Call<List<Product>> getAllProductWithPaging(

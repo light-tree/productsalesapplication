@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,6 +55,7 @@ public class ProductListActivity extends AppCompatActivity {
     private ProductTypeAdapter productTypeAdapter;
     private ProductAdapter productAdapter;
     private Button viewMoreButton;
+    private Parcelable recyclerViewState;
 
     private TextView query;
     private TextView type;
@@ -228,14 +230,19 @@ public class ProductListActivity extends AppCompatActivity {
                     new Callback<List<Product>>() {
                         @Override
                         public void onResponse(retrofit2.Call<List<Product>> call, Response<List<Product>> response) {
+                            if(productRecycler.getLayoutManager() != null) {
+                                recyclerViewState = productRecycler.getLayoutManager().onSaveInstanceState();
+                            }
                             productList = response.body();
                             if(!TextUtils.isEmpty(textQueryStatic)){
                                 productList = productList.stream().filter(product -> product.getName().toUpperCase().contains(textQueryStatic.toUpperCase())).collect(Collectors.toList());
                             }
                             productList = productList.stream().limit(limit).collect(Collectors.toList());
                             productAdapter = new ProductAdapter(productList);
+
                             productRecycler.setAdapter(productAdapter);
                             productRecycler.setLayoutManager(new GridLayoutManager(ProductListActivity.this, 2));
+                            productRecycler.getLayoutManager().onRestoreInstanceState(recyclerViewState);
                         }
 
                         @Override
