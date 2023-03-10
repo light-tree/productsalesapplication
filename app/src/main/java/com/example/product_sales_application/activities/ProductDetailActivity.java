@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.product_sales_application.R;
@@ -20,6 +21,7 @@ import com.example.product_sales_application.api.ProductApi;
 import com.example.product_sales_application.models.Product;
 import com.google.android.material.navigation.NavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private TextView tvProductName;
     private TextView tvDescription;
     private TextView tvPrice;
+    private ImageView imageView;
 
     private Product product;
     @Override
@@ -47,6 +50,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         tvProductName = findViewById(R.id.name);
         tvPrice = findViewById(R.id.price);
         tvDescription = findViewById(R.id.description);
+        imageView = findViewById(R.id.image);
 
         int id = Integer.parseInt(getIntent().getStringExtra("productId"));
         getProductById(id);
@@ -104,8 +108,10 @@ public class ProductDetailActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(retrofit2.Call<Product> call, Response<Product> response) {
                         product = response.body();
+                        Picasso.get().load(product.getUrl())
+                                .into(imageView);
                         tvProductName.setText(product.getName());
-                        tvPrice.setText(""+product.getPrice()+" VND");
+                        tvPrice.setText(String.format("%.0f VND", product.getPrice()));
                         tvDescription.setText(product.getDescription());
                     }
 

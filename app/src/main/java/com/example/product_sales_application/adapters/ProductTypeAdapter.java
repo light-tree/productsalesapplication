@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.product_sales_application.R;
 import com.example.product_sales_application.activities.ProductListActivity;
 import com.example.product_sales_application.models.ProductTypeDomain;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -50,6 +51,8 @@ public class ProductTypeAdapter extends RecyclerView.Adapter<ProductTypeAdapter.
         productTypeNameTextView.setText(productTypeDomain.getName());
 
         ImageView ImageView = holder.imageView;
+        Picasso.get().load(productTypeDomain.getUrlImange())
+                .into(ImageView);
 //        Uri uri = Uri.parse(productTypeDomain.getUrlImange());
 //        ImageView.setImageURI(uri);
 

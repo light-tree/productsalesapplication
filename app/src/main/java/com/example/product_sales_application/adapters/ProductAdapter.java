@@ -17,6 +17,7 @@ import com.example.product_sales_application.activities.HomeActivity;
 import com.example.product_sales_application.activities.ProductDetailActivity;
 import com.example.product_sales_application.activities.ProductListActivity;
 import com.example.product_sales_application.models.Product;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -64,21 +65,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         Product product = products.get(position);
 
         ImageView image = holder.image;
-        image.setImageResource(R.drawable.sample_product);
-//        File file = new  File("sample_product.jpg");
-//        if(file.exists()){
-//            image.setImageURI(Uri.fromFile(file));
-////            image.setImageURI(Uri.parse("android.resource://com.segf4ult.test/drawable/sample_product.jpg"));
-//        }
-//        else {
-//            image.setImageResource(R.drawable.ic_launcher_foreground);
-//        }
-
+        Picasso.get().load(product.getUrl())
+                .into(image);
         TextView name = holder.name;
         name.setText(String.format("%s", product.getName()));
 
         TextView price = holder.price;
-        price.setText(String.format("%.2f VND", product.getPrice()));
+        price.setText(String.format("%.0f VND", product.getPrice()));
 
         View view = holder.view;
         view.setOnClickListener(new View.OnClickListener() {

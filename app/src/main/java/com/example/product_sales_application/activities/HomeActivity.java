@@ -97,12 +97,12 @@ public class HomeActivity extends AppCompatActivity {
 
         productTypeView = findViewById(R.id.product_type_recycler);
         productTypeDomainList = new ArrayList<>();
-        productTypeDomainList.add(new ProductTypeDomain(1, "Tất cả", ""));
-        productTypeDomainList.add(new ProductTypeDomain(2, getString(R.string.product_type_1), ""));
-        productTypeDomainList.add(new ProductTypeDomain(3, getString(R.string.product_type_2), ""));
-        productTypeDomainList.add(new ProductTypeDomain(4, getString(R.string.product_type_3), ""));
-        productTypeDomainList.add(new ProductTypeDomain(5, getString(R.string.product_type_4), ""));
-        productTypeDomainList.add(new ProductTypeDomain(6, getString(R.string.product_type_5), ""));
+        productTypeDomainList.add(new ProductTypeDomain(1, "Tất cả", "https://tietkiemdiennang.net/wp-content/uploads/2020/08/thiet-bi-dien-tu-la-gi-1-2.jpg"));
+        productTypeDomainList.add(new ProductTypeDomain(2, getString(R.string.product_type_1), "https://cdn.tgdd.vn/Products/Images/42/247508/iphone-14-pro-tim-thumb-600x600.jpg"));
+        productTypeDomainList.add(new ProductTypeDomain(3, getString(R.string.product_type_2), "https://tinhocluna.com/wp-content/uploads/2021/04/pc-gaming.jpg"));
+        productTypeDomainList.add(new ProductTypeDomain(4, getString(R.string.product_type_3), "https://diennuocnhatlong.vn/uploads/may-lanh-nguyen-ly-hoat-dong-3.jpg"));
+        productTypeDomainList.add(new ProductTypeDomain(5, getString(R.string.product_type_4), "https://dienmaythudo24h.com/wp-content/uploads/2020/12/may-giat-long-ngang-toshiba-inverter-85kg-twbk95g4vws-wbmlmw.jpg"));
+        productTypeDomainList.add(new ProductTypeDomain(6, getString(R.string.product_type_5), "https://blog.dktcdn.net/files/kinh-doanh-hang-gia-dung-1.jpg"));
 
         productTypeAdapter = new ProductTypeAdapter(productTypeDomainList);
         productTypeView.setAdapter(productTypeAdapter);
