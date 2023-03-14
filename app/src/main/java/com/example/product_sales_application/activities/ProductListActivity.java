@@ -110,14 +110,14 @@ public class ProductListActivity extends AppCompatActivity {
         productTypeDomainList.add(new ProductTypeDomain(5, getString(R.string.product_type_4), "https://dienmaythudo24h.com/wp-content/uploads/2020/12/may-giat-long-ngang-toshiba-inverter-85kg-twbk95g4vws-wbmlmw.jpg"));
         productTypeDomainList.add(new ProductTypeDomain(6, getString(R.string.product_type_5), "https://blog.dktcdn.net/files/kinh-doanh-hang-gia-dung-1.jpg"));
 
+        query = findViewById(R.id.query);
+        type = findViewById(R.id.type);
         GetProductsByType(textQueryStatic, textTypeStatic);
         productTypeAdapter = new ProductTypeAdapter(productTypeDomainList);
         productTypeView.setAdapter(productTypeAdapter);
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         productTypeView.setLayoutManager(horizontalLayoutManager);
 
-        query = findViewById(R.id.query);
-        type = findViewById(R.id.type);
 
         String textQuery = getIntent().getStringExtra("query");
         if (!TextUtils.isEmpty(textQuery)) {
@@ -140,7 +140,7 @@ public class ProductListActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                GetProductsByType(query, textQueryStatic);
+                GetProductsByType(query, textTypeStatic);
                 return false;
             }
 
@@ -214,8 +214,10 @@ public class ProductListActivity extends AppCompatActivity {
 
     public void GetProductsByType(String query, String type) {
         textQueryStatic = query;
+        if(textTypeStatic != type) limit = 6;
         textTypeStatic = type;
         if (!TextUtils.isEmpty(textQueryStatic)) this.query.setText("Từ khóa: " + textQueryStatic);
+        if (!TextUtils.isEmpty(textTypeStatic)) this.type.setText("Loại sản phẩm: " + textTypeStatic);
         type = (TextUtils.isEmpty(type) || type.equals("Tất cả")) ? "" : type;
 
             ProductApi.productApi.getAllProductByType(type).enqueue(

@@ -116,8 +116,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        if(context instanceof ProductListActivity) return products.size() + 1;
-        else return products.size();
+        if(context instanceof HomeActivity) return products.size();
+        else return products.size() + 1;
     }
 
     @Override
