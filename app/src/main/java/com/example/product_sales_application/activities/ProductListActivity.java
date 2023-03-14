@@ -29,6 +29,7 @@ import com.example.product_sales_application.adapters.OrderDetailAdapter;
 import com.example.product_sales_application.adapters.ProductAdapter;
 import com.example.product_sales_application.adapters.ProductTypeAdapter;
 import com.example.product_sales_application.api.ProductApi;
+import com.example.product_sales_application.common.LastItemGridLayoutManager;
 import com.example.product_sales_application.models.Cart;
 import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.models.ProductTypeDomain;
@@ -69,7 +70,7 @@ public class ProductListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_list);
-        viewMoreButton = findViewById(R.id.view_more_button);
+//        viewMoreButton = findViewById(R.id.view_more_button);
         drawerLayout = findViewById(R.id.drawer_layout_product_list);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);
