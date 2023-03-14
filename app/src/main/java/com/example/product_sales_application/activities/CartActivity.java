@@ -13,8 +13,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +29,7 @@ import com.example.product_sales_application.models.Cart;
 import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.adapters.CartAdapter;
 import com.example.product_sales_application.R;
+import com.example.product_sales_application.models.RequestCode;
 import com.google.android.material.navigation.NavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -58,21 +61,19 @@ public class CartActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.nav);
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()){
-                case R.id.login:{
+            switch (item.getItemId()) {
+                case R.id.login: {
                     drawerLayout.close();
-                    startActivity(new Intent(CartActivity.this, LoginActivity.class));
-                    return true;
-                }
-                case R.id.home:{
-                    drawerLayout.close();
-                    startActivity(new Intent(CartActivity.this, HomeActivity.class));
-                    finish();
+                    startActivityForResult(new Intent(CartActivity.this, LoginActivity.class), RequestCode.HOME_LOGIN);
                     return true;
                 }
                 case R.id.order_history: {
                     drawerLayout.close();
-                    activityResultLauncher.launch(new Intent(CartActivity.this, OrderHistoryActivity.class));
+                    if(!isLogin()){
+                        showErrorNotLogin();
+                        return false;
+                    }
+                    startActivity(new Intent(CartActivity.this, OrderHistoryActivity.class));
                     return true;
                 }
             }
@@ -150,16 +151,20 @@ public class CartActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if(toggle.onOptionsItemSelected(item)){
+        if (toggle.onOptionsItemSelected(item)) {
             return true;
         }
 
         if (id == R.id.scanner) {
+            if(!isLogin()){
+                showErrorNotLogin();
+                return false;
+            }
             scannerCode();
         }
 
         if (id == R.id.cart) {
-
+            startActivity(new Intent(this, CartActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
@@ -190,15 +195,25 @@ public class CartActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if(requestCode == RequestCode.HOME_LOGIN){
+            if (data.getBooleanExtra("isLogin", false)) {
+                SharedPreferences sharedPref = getSharedPreferences("login_status", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putBoolean("isLoggedIn", true);
+                editor.apply();
+            }
+            return;
+        }
 
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() == null) {
                 Toast.makeText(getBaseContext(), "Canceled", Toast.LENGTH_LONG);
             } else {
                 Intent intent = new Intent(CartActivity.this, ProductDetailActivity.class);
                 intent.putExtra("productId", result.getContents());
-                activityResultLauncher.launch(intent);
+                startActivity(intent);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -215,6 +230,27 @@ public class CartActivity extends AppCompatActivity {
             }
         });
 
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+    private boolean isLogin() {
+        SharedPreferences preferences = getSharedPreferences("login_status", Context.MODE_PRIVATE);
+        boolean myBool = preferences.getBoolean("isLoggedIn", false);
+        return myBool;
+    }
+
+    private void showErrorNotLogin() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Cãnh báo");
+        builder.setMessage("Bạn cần đăng nhập để thực hiện chức năng này?");
+        builder.setPositiveButton("Đăng nhập", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(CartActivity.this, LoginActivity.class);
+                startActivityForResult(intent, RequestCode.HOME_LOGIN);
+            }
+        });
+        builder.setNegativeButton("Đóng", null);
         AlertDialog dialog = builder.create();
         dialog.show();
     }

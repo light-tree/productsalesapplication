@@ -38,6 +38,7 @@
         />
 
     <EditText
+        android:id="@+id/username_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxWidth="200dp"
@@ -54,6 +55,7 @@
         />
 
     <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/password_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxWidth="200dp"

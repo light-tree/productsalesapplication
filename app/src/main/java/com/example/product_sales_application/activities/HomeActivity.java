@@ -6,17 +6,25 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+
 import androidx.appcompat.widget.SearchView;
 
 import android.widget.Toast;
@@ -27,6 +35,7 @@ import com.example.product_sales_application.adapters.ProductTypeAdapter;
 import com.example.product_sales_application.api.ProductApi;
 import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.models.ProductTypeDomain;
+import com.example.product_sales_application.models.RequestCode;
 import com.google.android.material.navigation.NavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -81,11 +90,15 @@ public class HomeActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.login: {
                     drawerLayout.close();
-                    startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+                    startActivityForResult(new Intent(HomeActivity.this, LoginActivity.class), RequestCode.HOME_LOGIN);
                     return true;
                 }
                 case R.id.order_history: {
                     drawerLayout.close();
+                    if(!isLogin()){
+                        showErrorNotLogin();
+                        return false;
+                    }
                     startActivity(new Intent(HomeActivity.this, OrderHistoryActivity.class));
                     return true;
                 }
@@ -173,11 +186,15 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         if (id == R.id.scanner) {
+            if(!isLogin()){
+                showErrorNotLogin();
+                return false;
+            }
             scannerCode();
         }
 
         if (id == R.id.cart) {
-            startActivity(new Intent(HomeActivity.this, CartActivity.class));
+            startActivity(new Intent(this, CartActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
@@ -187,13 +204,23 @@ public class HomeActivity extends AppCompatActivity {
         intentIntegrator.setPrompt("Scan a barcode for QRcode");
         intentIntegrator.setOrientationLocked(false);
         intentIntegrator.setCameraId(0);
-//        intentIntegrator.setRequestCode(1);
         intentIntegrator.initiateScan();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == RequestCode.HOME_LOGIN){
+            if (data.getBooleanExtra("isLogin", false)) {
+                SharedPreferences sharedPref = getSharedPreferences("login_status", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putBoolean("isLoggedIn", true);
+                editor.apply();
+            }
+            return;
+        }
+
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
         if (result != null) {
@@ -210,7 +237,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void getProduct() {
-        ProductApi.productApi.getAllProductByTypeWithPaging(getString(R.string.product_type_1),1,6).enqueue(
+        ProductApi.productApi.getAllProductByTypeWithPaging(getString(R.string.product_type_1), 1, 6).enqueue(
                 new Callback<List<Product>>() {
                     @Override
                     public void onResponse(retrofit2.Call<List<Product>> call, Response<List<Product>> response) {
@@ -224,7 +251,7 @@ public class HomeActivity extends AppCompatActivity {
                     }
                 }
         );
-        ProductApi.productApi.getAllProductByTypeWithPaging(getString(R.string.product_type_2),1,6).enqueue(
+        ProductApi.productApi.getAllProductByTypeWithPaging(getString(R.string.product_type_2), 1, 6).enqueue(
                 new Callback<List<Product>>() {
                     @Override
                     public void onResponse(retrofit2.Call<List<Product>> call, Response<List<Product>> response) {
@@ -238,7 +265,7 @@ public class HomeActivity extends AppCompatActivity {
                     }
                 }
         );
-        ProductApi.productApi.getAllProductByTypeWithPaging(getString(R.string.product_type_3),1,6).enqueue(
+        ProductApi.productApi.getAllProductByTypeWithPaging(getString(R.string.product_type_3), 1, 6).enqueue(
                 new Callback<List<Product>>() {
                     @Override
                     public void onResponse(retrofit2.Call<List<Product>> call, Response<List<Product>> response) {
@@ -254,10 +281,41 @@ public class HomeActivity extends AppCompatActivity {
         );
     }
 
-    public void buildRecycler(ProductAdapter productAdapter, List<Product> products, RecyclerView recyclerView, int id){
+    @Override
+    protected void onStop() {
+        super.onStop();
+        SharedPreferences sharedPref = getSharedPreferences("login_status", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean("isLoggedIn", false);
+        editor.apply();
+    }
+
+    public void buildRecycler(ProductAdapter productAdapter, List<Product> products, RecyclerView recyclerView, int id) {
         productAdapter = new ProductAdapter(products);
         recyclerView = findViewById(id);
         recyclerView.setAdapter(productAdapter);
         recyclerView.setNestedScrollingEnabled(false);
+    }
+
+    private boolean isLogin() {
+        SharedPreferences preferences = getSharedPreferences("login_status", Context.MODE_PRIVATE);
+        boolean myBool = preferences.getBoolean("isLoggedIn", false);
+        return myBool;
+    }
+
+    private void showErrorNotLogin() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Cãnh báo");
+        builder.setMessage("Bạn cần đăng nhập để thực hiện chức năng này?");
+        builder.setPositiveButton("Đăng nhập", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                startActivityForResult(intent, RequestCode.HOME_LOGIN);
+            }
+        });
+        builder.setNegativeButton("Đóng", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

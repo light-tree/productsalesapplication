@@ -2,11 +2,15 @@ package com.example.product_sales_application.activities;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.display.DeviceProductInfo;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,12 +19,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.product_sales_application.R;
 import com.example.product_sales_application.api.ProductApi;
 import com.example.product_sales_application.models.Product;
+import com.example.product_sales_application.models.RequestCode;
 import com.google.android.material.navigation.NavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -63,21 +70,19 @@ public class ProductDetailActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.nav);
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()){
-                case R.id.login:{
+            switch (item.getItemId()) {
+                case R.id.login: {
                     drawerLayout.close();
-                    startActivity(new Intent(ProductDetailActivity.this, LoginActivity.class));
-                    return true;
-                }
-                case R.id.home:{
-                    drawerLayout.close();
-                    startActivity(new Intent(ProductDetailActivity.this, HomeActivity.class));
-                    finish();
+                    startActivityForResult(new Intent(ProductDetailActivity.this, LoginActivity.class), RequestCode.HOME_LOGIN);
                     return true;
                 }
                 case R.id.order_history: {
                     drawerLayout.close();
-                    startActivity((new Intent(ProductDetailActivity.this, OrderHistoryActivity.class)));
+                    if(!isLogin()){
+                        showErrorNotLogin();
+                        return false;
+                    }
+                    startActivity(new Intent(ProductDetailActivity.this, OrderHistoryActivity.class));
                     return true;
                 }
             }
@@ -127,18 +132,28 @@ public class ProductDetailActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (requestCode){
-            case 0:{
-                if(resultCode == RESULT_CANCELED){
-                    finish();
-                }
-                if(resultCode == RESULT_OK){
-                    finish();
-                }
+        if(requestCode == RequestCode.HOME_LOGIN){
+            if (data.getBooleanExtra("isLogin", false)) {
+                SharedPreferences sharedPref = getSharedPreferences("login_status", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putBoolean("isLoggedIn", true);
+                editor.apply();
             }
-            default:{
+            return;
+        }
 
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            if (result.getContents() == null) {
+                Toast.makeText(getBaseContext(), "Canceled", Toast.LENGTH_LONG);
+            } else {
+                Intent intent = new Intent(ProductDetailActivity.this, ProductDetailActivity.class);
+                intent.putExtra("productId", result.getContents());
+                startActivity(intent);
             }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -170,16 +185,20 @@ public class ProductDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if(toggle.onOptionsItemSelected(item)){
+        if (toggle.onOptionsItemSelected(item)) {
             return true;
         }
 
         if (id == R.id.scanner) {
+            if(!isLogin()){
+                showErrorNotLogin();
+                return false;
+            }
             scannerCode();
         }
 
         if (id == R.id.cart) {
-            startActivity(new Intent(ProductDetailActivity.this, CartActivity.class));
+            startActivity(new Intent(this, CartActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
@@ -191,5 +210,27 @@ public class ProductDetailActivity extends AppCompatActivity {
         intentIntegrator.setRequestCode(1);
         intentIntegrator.setCameraId(0);
         intentIntegrator.initiateScan();
+    }
+
+    private boolean isLogin() {
+        SharedPreferences preferences = getSharedPreferences("login_status", Context.MODE_PRIVATE);
+        boolean myBool = preferences.getBoolean("isLoggedIn", false);
+        return myBool;
+    }
+
+    private void showErrorNotLogin() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Cãnh báo");
+        builder.setMessage("Bạn cần đăng nhập để thực hiện chức năng này?");
+        builder.setPositiveButton("Đăng nhập", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(ProductDetailActivity.this, LoginActivity.class);
+                startActivityForResult(intent, RequestCode.HOME_LOGIN);
+            }
+        });
+        builder.setNegativeButton("Đóng", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
