@@ -55,13 +55,12 @@ public class ProductListActivity extends AppCompatActivity {
     private List<Product> productList;
     private ProductTypeAdapter productTypeAdapter;
     private ProductAdapter productAdapter;
-    private Button viewMoreButton;
     private Parcelable recyclerViewState;
 
     private TextView query;
     private TextView type;
 
-    int page = 1, limit = 6;
+    public int page = 1, limit = 6;
 
     public static String textQueryStatic = "";
     public static String textTypeStatic = "";
@@ -243,17 +242,15 @@ public class ProductListActivity extends AppCompatActivity {
 
                             if(productAdapter == null){
                                 productAdapter = new ProductAdapter(productList);
-
                                 productRecycler.setAdapter(productAdapter);
-                                productRecycler.setLayoutManager(new GridLayoutManager(ProductListActivity.this, 2));
-                                viewMoreButton = findViewById(R.id.view_more_button);
-                                viewMoreButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        limit += 6;
-                                        GetProductsByType(textQueryStatic, textTypeStatic);
-                                    }
-                                });
+                                productRecycler.setLayoutManager(new LastItemGridLayoutManager(ProductListActivity.this, 2));
+//                                productAdapter.getViewMoreButton().setOnClickListener(new View.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(View v) {
+//                                        limit += 6;
+//                                        GetProductsByType(textQueryStatic, textTypeStatic);
+//                                    }
+//                                });
                             }
                             else{
                                 productAdapter.notifyDataSetChanged();

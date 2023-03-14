@@ -35,15 +35,11 @@ import retrofit2.Response;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
 
     private Context context;
-    private long limit = 5;
-    public static String textQueryStatic = "";
-    private  Button viewMore;
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView image;
         public TextView name;
         public TextView price;
         public View view;
-        public TextView description;
         public Button viewMoreButton;
 
         public ViewHolder(View viewProduct) {
@@ -84,6 +80,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ProductAdapter.ViewHolder holder, int position) {
         if (position == products.size()) {
+            holder.viewMoreButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ((ProductListActivity)context).limit += 6;
+                    ((ProductListActivity)context).GetProductsByType(
+                            ((ProductListActivity)context).textQueryStatic,
+                            ((ProductListActivity)context).textTypeStatic
+                    );
+                }
+            });
             return;
         }
         Product product = products.get(position);
@@ -110,7 +116,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return products.size() + 1;
+        if(context instanceof ProductListActivity) return products.size() + 1;
+        else return products.size();
     }
 
     @Override
