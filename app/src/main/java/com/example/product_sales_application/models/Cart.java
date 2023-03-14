@@ -11,9 +11,14 @@ public class Cart implements Serializable {
     public Cart(ArrayList<Product> productList) {
        this.products = productList;
     }
+    public Cart(){} ;
 
     public void addProduct(Product product) {
-        products.add(product);
+        if(products.contains(product)){
+            product.setQuantity(product.getQuantity()+1);
+        }else {
+            products.add(product);
+        }
     }
 
     public boolean removeProduct(Product product) {
