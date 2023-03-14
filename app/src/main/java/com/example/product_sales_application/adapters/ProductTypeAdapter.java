@@ -60,11 +60,19 @@ public class ProductTypeAdapter extends RecyclerView.Adapter<ProductTypeAdapter.
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, ProductListActivity.class);
-                intent.putExtra("type", productTypeDomain.getName());
-                context.startActivity(intent);
-
-                ((Activity)context).finish();
+                if(context instanceof ProductListActivity){
+                    ((ProductListActivity)context).GetProductsByType(
+                            ((ProductListActivity)context).textQueryStatic,
+                            productTypeDomain.getName()
+                    );
+                }
+                else{
+                    Intent intent = new Intent(context, ProductListActivity.class);
+                    intent.putExtra("query", "");
+                    intent.putExtra("type", productTypeDomain.getName());
+                    context.startActivity(intent);
+                    ((Activity)context).finish();
+                }
             }
         });
 

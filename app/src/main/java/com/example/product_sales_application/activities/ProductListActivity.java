@@ -63,6 +63,7 @@ public class ProductListActivity extends AppCompatActivity {
     int page = 1, limit = 6;
 
     public static String textQueryStatic = "";
+    public static String textTypeStatic = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,30 +110,33 @@ public class ProductListActivity extends AppCompatActivity {
         productTypeDomainList.add(new ProductTypeDomain(5, getString(R.string.product_type_4), "https://dienmaythudo24h.com/wp-content/uploads/2020/12/may-giat-long-ngang-toshiba-inverter-85kg-twbk95g4vws-wbmlmw.jpg"));
         productTypeDomainList.add(new ProductTypeDomain(6, getString(R.string.product_type_5), "https://blog.dktcdn.net/files/kinh-doanh-hang-gia-dung-1.jpg"));
 
-        GetProductsByType();
+        GetProductsByType(textQueryStatic, textTypeStatic);
 
         productTypeAdapter = new ProductTypeAdapter(productTypeDomainList);
         productTypeView.setAdapter(productTypeAdapter);
-        LinearLayoutManager horizontalLayoutManagaer = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        productTypeView.setLayoutManager(horizontalLayoutManagaer);
+        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        productTypeView.setLayoutManager(horizontalLayoutManager);
 
         query = findViewById(R.id.query);
         type = findViewById(R.id.type);
 
         String textQuery = getIntent().getStringExtra("query");
         if (!TextUtils.isEmpty(textQuery)) {
-            textQueryStatic = getIntent().getStringExtra("query");
+            textQueryStatic = textQuery;
         }
         if (!TextUtils.isEmpty(textQueryStatic)) query.setText("Từ khóa: " + textQueryStatic);
 
         String textType = getIntent().getStringExtra("type");
-        if (!TextUtils.isEmpty(textType)) type.setText("Loại sản phẩm: " + textType);
+        if (!TextUtils.isEmpty(textType)) {
+            textTypeStatic = textType;
+        }
+        if (!TextUtils.isEmpty(textType)) type.setText("Loại sản phẩm: " + textTypeStatic);
 
         viewMoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 limit += 6;
-                GetProductsByType();
+                GetProductsByType(textQueryStatic, textTypeStatic);
             }
         });
     }
@@ -145,12 +149,12 @@ public class ProductListActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Intent intent = new Intent(ProductListActivity.this, ProductListActivity.class);
-//                intent.putExtra("query", ((TextView)findViewById(R.id.query)).getText().toString().substring(8));
-                intent.putExtra("query", query);
-                intent.putExtra("type", ((TextView) findViewById(R.id.type)).getText().toString().substring(15));
-                startActivity(intent);
-                finish();
+                GetProductsByType(query, textQueryStatic);
+//                Intent intent = new Intent(ProductListActivity.this, ProductListActivity.class);
+//                intent.putExtra("query", query);
+//                intent.putExtra("type", ((TextView) findViewById(R.id.type)).getText().toString().substring(15));
+//                startActivity(intent);
+//                finish();
                 return false;
             }
 
@@ -222,8 +226,10 @@ public class ProductListActivity extends AppCompatActivity {
         }
     }
 
-    private void GetProductsByType() {
-        String type = getIntent().getStringExtra("type");
+    public void GetProductsByType(String query, String type) {
+        textQueryStatic = query;
+        textTypeStatic = type;
+        if (!TextUtils.isEmpty(textQueryStatic)) this.query.setText("Từ khóa: " + textQueryStatic);
         type = (TextUtils.isEmpty(type) || type.equals("Tất cả")) ? "" : type;
 
             ProductApi.productApi.getAllProductByType(type).enqueue(
@@ -233,15 +239,29 @@ public class ProductListActivity extends AppCompatActivity {
                             if(productRecycler.getLayoutManager() != null) {
                                 recyclerViewState = productRecycler.getLayoutManager().onSaveInstanceState();
                             }
-                            productList = response.body();
+                            List<Product> tmp = new ArrayList<>();
+                            tmp = response.body();
                             if(!TextUtils.isEmpty(textQueryStatic)){
-                                productList = productList.stream().filter(product -> product.getName().toUpperCase().contains(textQueryStatic.toUpperCase())).collect(Collectors.toList());
+                                tmp = tmp.stream().filter(product -> product.getName().toUpperCase().contains(textQueryStatic.toUpperCase())).collect(Collectors.toList());
                             }
-                            productList = productList.stream().limit(limit).collect(Collectors.toList());
-                            productAdapter = new ProductAdapter(productList);
+                            tmp = tmp.stream().limit(limit).collect(Collectors.toList());
 
-                            productRecycler.setAdapter(productAdapter);
-                            productRecycler.setLayoutManager(new GridLayoutManager(ProductListActivity.this, 2));
+                            if(productList != null){
+                                productList.clear();
+                                productList.addAll(tmp);
+                            }
+                            else{
+                                productList = tmp;
+                            }
+
+                            if(productAdapter == null){
+                                productAdapter = new ProductAdapter(productList);
+                                productRecycler.setAdapter(productAdapter);
+                                productRecycler.setLayoutManager(new GridLayoutManager(ProductListActivity.this, 2));
+                            }
+                            else{
+                                productAdapter.notifyDataSetChanged();
+                            }
                             productRecycler.getLayoutManager().onRestoreInstanceState(recyclerViewState);
                         }
 
