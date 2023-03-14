@@ -84,13 +84,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ProductAdapter.ViewHolder holder, int position) {
         if (position == products.size()) {
-            holder.viewMoreButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    limit += 6;
-                    GetProductsByType();
-                }
-            });
             return;
         }
         Product product = products.get(position);
@@ -123,39 +116,5 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     @Override
     public int getItemViewType(int position) {
         return (position == products.size()) ? R.layout.view_more_button : R.layout.view_product;
-    }
-
-    private void GetProductsByType() {
-        Intent intent = ((Activity) context).getIntent();
-        String type = intent.getStringExtra("type");
-        type = (TextUtils.isEmpty(type) || type.equals("Tất cả")) ? "" : type;
-
-        ProductApi.productApi.getAllProductByType(type).enqueue(
-                new Callback<List<Product>>() {
-                    @Override
-                    public void onResponse(retrofit2.Call<List<Product>> call, Response<List<Product>> response) {
-                        List<Product> list = response.body();
-                        if(!TextUtils.isEmpty(textQueryStatic)){
-                            list = list.stream().filter(product -> product.getName().toUpperCase().contains(textQueryStatic.toUpperCase())).collect(Collectors.toList());
-                        }
-
-                        products = list.stream().limit(limit).collect(Collectors.toList());
-                        if(products.size() ==  list.size()){
-                            viewMore = (Button) ((Activity) context).findViewById(R.id.view_more_button);
-                            viewMore.setVisibility(View.INVISIBLE);
-                        } else {
-                            viewMore = (Button) ((Activity) context).findViewById(R.id.view_more_button);
-                            viewMore.setVisibility(View.VISIBLE);
-                        }
-                        notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onFailure(Call<List<Product>> call, Throwable t) {
-                        Toast.makeText(context, "Lấy danh sách sản phẩm không thành cộng", Toast.LENGTH_LONG).show();
-                        products = new ArrayList<>();
-                    }
-                }
-        );
     }
 }

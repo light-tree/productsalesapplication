@@ -112,7 +112,6 @@ public class ProductListActivity extends AppCompatActivity {
         productTypeDomainList.add(new ProductTypeDomain(6, getString(R.string.product_type_5), "https://blog.dktcdn.net/files/kinh-doanh-hang-gia-dung-1.jpg"));
 
         GetProductsByType(textQueryStatic, textTypeStatic);
-
         productTypeAdapter = new ProductTypeAdapter(productTypeDomainList);
         productTypeView.setAdapter(productTypeAdapter);
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -132,14 +131,6 @@ public class ProductListActivity extends AppCompatActivity {
             textTypeStatic = textType;
         }
         if (!TextUtils.isEmpty(textType)) type.setText("Loại sản phẩm: " + textTypeStatic);
-
-        viewMoreButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                limit += 6;
-                GetProductsByType(textQueryStatic, textTypeStatic);
-            }
-        });
     }
 
     @Override
@@ -151,11 +142,6 @@ public class ProductListActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 GetProductsByType(query, textQueryStatic);
-//                Intent intent = new Intent(ProductListActivity.this, ProductListActivity.class);
-//                intent.putExtra("query", query);
-//                intent.putExtra("type", ((TextView) findViewById(R.id.type)).getText().toString().substring(15));
-//                startActivity(intent);
-//                finish();
                 return false;
             }
 
@@ -257,8 +243,17 @@ public class ProductListActivity extends AppCompatActivity {
 
                             if(productAdapter == null){
                                 productAdapter = new ProductAdapter(productList);
+
                                 productRecycler.setAdapter(productAdapter);
                                 productRecycler.setLayoutManager(new GridLayoutManager(ProductListActivity.this, 2));
+                                viewMoreButton = findViewById(R.id.view_more_button);
+                                viewMoreButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        limit += 6;
+                                        GetProductsByType(textQueryStatic, textTypeStatic);
+                                    }
+                                });
                             }
                             else{
                                 productAdapter.notifyDataSetChanged();
