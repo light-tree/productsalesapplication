@@ -70,7 +70,6 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
         holder.orderDate.setText(dateFormat.format(order.getOrderedDate()));
         holder.requireDate.setText(dateFormat.format(order.getRequiredDate()));
 
-
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,6 +80,6 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
 
     @Override
     public int getItemCount() {
-        return order.size();
+        return order != null ? order.size() : 0;
     }
 }

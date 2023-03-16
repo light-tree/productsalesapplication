@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Order {
     private int id;
-    private Cart cart;
+    private List<OrderDetail> orderDetailList;
     private String customerPhone;
     private String customerFullName;
     private String customerAddress;
@@ -15,14 +15,12 @@ public class Order {
     private Date requiredDate;
     private Account staff;
 
-    public Order(int id, Cart cart) {
-        this.id = id;
-        this.cart = cart;
+    public Order() {
     }
 
-    public Order(int id, Cart cart, String customerPhone, String customerFullName, String customerAddress, Date orderedDate, Date requiredDate, Account staff) {
+    public Order(int id, List<OrderDetail> orderDetailList, String customerPhone, String customerFullName, String customerAddress, Date orderedDate, Date requiredDate, Account staff) {
         this.id = id;
-        this.cart = cart;
+        this.orderDetailList = orderDetailList;
         this.customerPhone = customerPhone;
         this.customerFullName = customerFullName;
         this.customerAddress = customerAddress;
@@ -31,20 +29,20 @@ public class Order {
         this.staff = staff;
     }
 
+    public List<OrderDetail> getOrderDetailList() {
+        return orderDetailList;
+    }
+
+    public void setOrderDetailList(List<OrderDetail> orderDetailList) {
+        this.orderDetailList = orderDetailList;
+    }
+
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Cart getCart() {
-        return cart;
-    }
-
-    public void setCart(Cart cart) {
-        this.cart = cart;
     }
 
     public String getCustomerPhone() {
