@@ -27,4 +27,9 @@ public interface AccountApi {
     @GET("account")
     Call<List<Account>> checkLogin(@Query("username") String username,
                                    @Query("password") String password);
+
+    @GET("account")
+    Call<List<Account>> getAccountByPhone(@Query("username") String phone);
+
+
 }

@@ -4,14 +4,16 @@ public class Account {
     private String username;
     private String fullName;
     private String password;
+    private String phone;
     private int id;
 
 
-    public Account(String username, String fullName, String password, int id) {
+    public Account(String username, String fullName, String password, int id, String phone) {
         this.username = username;
         this.fullName = fullName;
         this.password = password;
         this.id = id;
+        this.phone = phone;
     }
 
     public Account() {
@@ -49,4 +51,11 @@ public class Account {
         this.id = id;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 }
