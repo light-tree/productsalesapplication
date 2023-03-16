@@ -25,6 +25,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.product_sales_application.manager.AccountManager;
+import com.example.product_sales_application.manager.CartManagerSingleton;
 import com.example.product_sales_application.models.Cart;
 import com.example.product_sales_application.models.Order;
 import com.example.product_sales_application.adapters.OrderDetailAdapter;
@@ -198,9 +200,8 @@ public class OrderActivity extends AppCompatActivity {
     }
 
     private boolean isLogin() {
-        SharedPreferences preferences = getSharedPreferences("login_status", Context.MODE_PRIVATE);
-        boolean myBool = preferences.getBoolean("isLoggedIn", false);
-        return myBool;
+        AccountManager accountManager = CartManagerSingleton.getAccountManagerInstance(this);
+        return accountManager.isLogin();
     }
 
     private void showErrorNotLogin() {

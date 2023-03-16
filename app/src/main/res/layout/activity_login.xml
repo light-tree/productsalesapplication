@@ -64,12 +64,22 @@
         android:inputType="textPassword"
         android:hint="Password"/>
 
+    <TextView
+        android:id="@+id/text_view_login_otp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Đăng nhập với OTP"
+        android:layout_margin="20dp"
+        android:textColor="@color/purple_700"
+        android:textSize="20dp"
+        />
+
     <Button
         android:id="@+id/button_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Login"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="20dp"
         android:layout_gravity="center"
         android:shadowRadius="@integer/material_motion_duration_short_2"
         />

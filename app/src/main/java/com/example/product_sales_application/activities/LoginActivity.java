@@ -1,5 +1,6 @@
 package com.example.product_sales_application.activities;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -9,10 +10,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.product_sales_application.R;
 import com.example.product_sales_application.api.AccountApi;
+import com.example.product_sales_application.manager.AccountManager;
+import com.example.product_sales_application.manager.CartManagerSingleton;
 import com.example.product_sales_application.models.Account;
 import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.models.RequestCode;
@@ -29,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button buttonBack;
     private EditText usernameEdit;
     private EditText passwordEdit;
+    private TextView loginWithOTP;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
 
         usernameEdit = findViewById(R.id.username_edit_text);
         passwordEdit = findViewById(R.id.password_edit_text);
+        loginWithOTP = findViewById(R.id.text_view_login_otp);
 
         buttobLogin = findViewById(R.id.button_login);
         buttonBack = findViewById(R.id.button_back);
@@ -51,6 +57,14 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+
+        loginWithOTP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, VerifyPhoneNumberActivity.class);
+                startActivityForResult(intent, RequestCode.LOGIN_VERIFYPHONE);
             }
         });
     }
@@ -85,6 +99,20 @@ public class LoginActivity extends AppCompatActivity {
         );
 
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == RequestCode.LOGIN_VERIFYPHONE){
+            if(resultCode == RESULT_OK){
+                AccountManager accountManager = CartManagerSingleton.getAccountManagerInstance(this);
+                accountManager.login();
+                finish();
+            } else if(resultCode == RESULT_CANCELED){
+
+            }
+        }
     }
 
     public boolean validateAccount(Account account){
