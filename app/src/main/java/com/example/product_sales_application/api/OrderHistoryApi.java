@@ -4,6 +4,8 @@ import com.example.product_sales_application.models.Order;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -22,7 +24,7 @@ public interface OrderHistoryApi {
             .create(OrderHistoryApi.class);
 
     @GET("order")
-    Call<Order> getAllOrder();
+    Call<List<Order>> getAllOrder();
 
     @GET("order")
     Call<Order> getAllOrderByPhone(@Query("customerPhone")String customerPhone);

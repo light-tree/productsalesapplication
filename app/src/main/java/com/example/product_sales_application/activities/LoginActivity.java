@@ -82,9 +82,8 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResponse(Call<List<Account>> call, Response<List<Account>> response) {
                         List<Account> list = response.body();
                         if(list.size() == 1){
-                            Intent returnIntent = new Intent();
-                            returnIntent.putExtra("isLogin",(boolean) true);
-                            setResult(LoginActivity.RESULT_OK,returnIntent);
+                            AccountManager accountManager = CartManagerSingleton.getAccountManagerInstance(LoginActivity.this);
+                            accountManager.login();
                             finish();
                             return;
                         }

@@ -27,17 +27,24 @@ import android.widget.Toast;
 
 import com.example.product_sales_application.R;
 import com.example.product_sales_application.adapters.OrderDetailAdapter;
+import com.example.product_sales_application.api.OrderHistoryApi;
 import com.example.product_sales_application.manager.AccountManager;
 import com.example.product_sales_application.manager.CartManagerSingleton;
-import com.example.product_sales_application.models.Cart;
 import com.example.product_sales_application.models.Order;
-import com.example.product_sales_application.models.Product;
+import com.example.product_sales_application.models.OrderDetail;
 import com.example.product_sales_application.models.RequestCode;
 import com.google.android.material.navigation.NavigationView;
+import com.google.gson.Gson;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HistoryDetailActivity extends AppCompatActivity {
 
@@ -46,14 +53,37 @@ public class HistoryDetailActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private OrderDetailAdapter orderDetailAdapter;
     private RecyclerView orderDetailCardView;
-    private  Button btnBack;
+    private Button btnBack;
     private TextView total;
+    private List<OrderDetail> orderDetailList;
+    private TextView textViewCustomerName,
+            textViewCutomerPhone,
+            textViewStaffName,
+            textViewStaffPhoneNumber,
+            textViewCustomerAddr,
+            textViewOrderDate,
+            textViewRequireDate;
+    private Order order;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history_detail);
 
+        initUI();
+        order = new Gson().fromJson(getIntent().getStringExtra("order"), Order.class);
+        initDataViewOrderDetail(order);
+
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed(); // Quay trở lại Activity trước đó
+            }
+        });
+    }
+
+    private void initUI() {
         drawerLayout = findViewById(R.id.drawer_layout_order);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);
@@ -70,7 +100,7 @@ public class HistoryDetailActivity extends AppCompatActivity {
                 }
                 case R.id.order_history: {
                     drawerLayout.close();
-                    if(!isLogin()){
+                    if (!isLogin()) {
                         showErrorNotLogin();
                         return false;
                     }
@@ -81,35 +111,42 @@ public class HistoryDetailActivity extends AppCompatActivity {
             return true;
         });
 
-//        Cart cart =  (Cart)getIntent().getSerializableExtra("cart");
-        ArrayList<Product> productList = new ArrayList<Product>();
-        productList.add(new Product(1,"Product1 1",  R.drawable.image, 100f,1,"Description of product 2"));
-        productList.add(new Product(2,"Product1 2",  R.drawable.image, 100f,1,"Description of product 2"));
-        productList.add(new Product(3,"Product1 3",  R.drawable.image, 100f,1,"Description of product 2"));
-        productList.add(new Product(1,"Product1 1",  R.drawable.image, 100f,1,"Description of product 2"));
-        productList.add(new Product(2,"Product1 2",  R.drawable.image, 100f,1,"Description of product 2"));
+        orderDetailAdapter = new OrderDetailAdapter(orderDetailList);
 
-        Cart cart = new Cart(productList);
-        Order order = new Order(1,cart);
-        OrderDetailAdapter orderDetailAdapter = new OrderDetailAdapter(order);
-
-        orderDetailCardView = findViewById(R.id.recycler_view_cart);
+        orderDetailCardView = findViewById(R.id.recycler_view_product_order);
         orderDetailCardView.setLayoutManager(new GridLayoutManager(this, 1));
         orderDetailCardView.setAdapter(orderDetailAdapter);
         orderDetailCardView.setNestedScrollingEnabled(true);
+        total = findViewById(R.id.tv_total);
+        btnBack = (Button) findViewById(R.id.btn_cancel);
+        textViewCustomerName = findViewById(R.id.customer_fullname);
+        textViewCutomerPhone = findViewById(R.id.customer_phone_number);
+        textViewStaffName = findViewById(R.id.staff_name);
+        textViewStaffPhoneNumber = findViewById(R.id.staff_phone_number);
+        textViewCustomerAddr = findViewById(R.id.customer_address);
+        textViewOrderDate = findViewById(R.id.order_date);
+        textViewRequireDate = findViewById(R.id.require_date);
+    }
 
+    private void initDataViewOrderDetail(Order order) {
+        orderDetailList = order.getOrderDetailList();
+        orderDetailAdapter.setOrderDetailList(orderDetailList);
+        textViewCustomerName.setText("Khách hàng: " + order.getCustomerFullName());
+        textViewCutomerPhone.setText("SĐT khách hàng: " + order.getOrderDetailList());
+        textViewStaffName.setText("Nhân viên: " + order.getStaff().getFullName());
+        textViewStaffPhoneNumber.setText("SĐT nhân viên: " + order.getStaff().getPhone());
+        textViewCustomerAddr.setText("Địa chỉ khách hàng: " + order.getCustomerAddress());
+        textViewOrderDate.setText("Ngày đặt hàng: " + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(order.getOrderedDate()));
+        textViewRequireDate.setText("Ngày giao hàng: " + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(order.getRequiredDate()));
+        List<Double> totalPrice = new ArrayList<>();
+        orderDetailList.stream()
+                .forEach(element -> {
+                    double tmp = totalPrice.get(0) + element.getQuantity() * element.getProduct().getPrice();
+                    totalPrice.set(0, tmp);
+                });
 
-        total = (TextView)findViewById(R.id.tv_invoice_total);
+        total.setText(String.format("Tổng tiền: " + "%.2f VND", totalPrice.size() != 0 ? totalPrice.get(0) : 0));
 
-        total.setText(String.format( "Tổng tiền: " + "%.2f VND", order.getCart().getTotalPrice()) );
-
-        btnBack = (Button)findViewById(R.id.btn_cancel);
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed(); // Quay trở lại Activity trước đó
-            }
-        });
     }
 
     @Override
@@ -145,7 +182,7 @@ public class HistoryDetailActivity extends AppCompatActivity {
         }
 
         if (id == R.id.scanner) {
-            if(!isLogin()){
+            if (!isLogin()) {
                 showErrorNotLogin();
                 return false;
             }
@@ -184,7 +221,7 @@ public class HistoryDetailActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == RequestCode.HOME_LOGIN){
+        if (requestCode == RequestCode.HOME_LOGIN) {
             if (data.getBooleanExtra("isLogin", false)) {
                 SharedPreferences sharedPref = getSharedPreferences("login_status", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();

@@ -21,23 +21,28 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.product_sales_application.R;
 import com.example.product_sales_application.adapters.OrderHistoryAdapter;
+import com.example.product_sales_application.api.OrderHistoryApi;
 import com.example.product_sales_application.manager.AccountManager;
 import com.example.product_sales_application.manager.CartManagerSingleton;
-import com.example.product_sales_application.models.Cart;
 import com.example.product_sales_application.models.Order;
-import com.example.product_sales_application.models.OrderDetail;
-import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.models.RequestCode;
 import com.google.android.material.navigation.NavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class OrderHistoryActivity extends AppCompatActivity {
 
@@ -47,12 +52,16 @@ public class OrderHistoryActivity extends AppCompatActivity {
     private RecyclerView listOrderHistory;
     private List<Order> listOrderHistoryData;
     private OrderHistoryAdapter orderHistoryAdapter;
+    private EditText edtSearchCusPhone;
+    private Button buttonSearchInvoice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_history);
 
+        edtSearchCusPhone = findViewById(R.id.search_cust_phone);
+        buttonSearchInvoice = findViewById(R.id.button_search_invoice_by_phone);
         drawerLayout = findViewById(R.id.drawer_layout_order);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);
@@ -69,7 +78,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
                 }
                 case R.id.order_history: {
                     drawerLayout.close();
-                    if(!isLogin()){
+                    if (!isLogin()) {
                         showErrorNotLogin();
                         return false;
                     }
@@ -85,24 +94,18 @@ public class OrderHistoryActivity extends AppCompatActivity {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         listOrderHistory.setLayoutManager(linearLayoutManager);
 
-//        listOrderHistoryData = new ArrayList<Order>() {{
-//            add(new Order("0123456789", "Anh A", 1, new Cart(new ArrayList<Product>() {{
-//                add(new Product(1, "Iphone10", 100f));
-//                add(new Product(2, "Iphone11", 110f));
-//                add(new Product(3, "Iphone12", 120f));
-//                add(new Product(4, "Iphone13", 130f));
-//            }}
-//            )));
-//            add(new Order("0987654321", "Anh B", 2, new Cart(new ArrayList<Product>() {{
-//                add(new Product(1, "Iphone10", 100f));
-//                add(new Product(2, "Iphone11", 110f));
-//                add(new Product(3, "Iphone12", 120f));
-//                add(new Product(4, "Iphone13", 130f));
-//            }}
-//            )));
-//        }};
         orderHistoryAdapter = new OrderHistoryAdapter(listOrderHistoryData);
         listOrderHistory.setAdapter(orderHistoryAdapter);
+
+        buttonSearchInvoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String strSearchvalue = edtSearchCusPhone.getText().toString().trim();
+                getOrderWithPhone(strSearchvalue);
+            }
+        });
+
+        getAllOrderDetail();
     }
 
     @Override
@@ -138,7 +141,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
         }
 
         if (id == R.id.scanner) {
-            if(!isLogin()){
+            if (!isLogin()) {
                 showErrorNotLogin();
                 return false;
             }
@@ -177,7 +180,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == RequestCode.HOME_LOGIN){
+        if (requestCode == RequestCode.HOME_LOGIN) {
             if (data.getBooleanExtra("isLogin", false)) {
                 SharedPreferences sharedPref = getSharedPreferences("login_status", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
@@ -221,5 +224,45 @@ public class OrderHistoryActivity extends AppCompatActivity {
         builder.setNegativeButton("Đóng", null);
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    private void getAllOrderDetail() {
+        OrderHistoryApi.orderHistoryApi.getAllOrder().enqueue(
+                new Callback<List<Order>>() {
+                    @Override
+                    public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
+                        listOrderHistoryData = response.body();
+                        orderHistoryAdapter.setOrderList(listOrderHistoryData);
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Order>> call, Throwable t) {
+                        Toast.makeText(OrderHistoryActivity.this, "Lỗi không thể lấy dữ liệu", Toast.LENGTH_LONG);
+                    }
+                }
+        );
+    }
+
+    private void getOrderWithPhone(String phone) {
+        OrderHistoryApi.orderHistoryApi.getAllOrder().enqueue(
+                new Callback<List<Order>>() {
+                    @Override
+                    public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
+                        listOrderHistoryData = response.body();
+                        listOrderHistoryData = listOrderHistoryData
+                                .stream()
+                                .filter(element ->
+                                        element.getCustomerPhone().contains(phone)
+                                )
+                                .collect(Collectors.toList());
+                        orderHistoryAdapter.setOrderList(listOrderHistoryData);
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Order>> call, Throwable t) {
+                        Toast.makeText(OrderHistoryActivity.this, "Lỗi không thể lấy dữ liệu", Toast.LENGTH_LONG);
+                    }
+                }
+        );
     }
 }

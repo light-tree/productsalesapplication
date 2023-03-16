@@ -80,10 +80,10 @@ public class OrderActivity extends AppCompatActivity {
         });
 
         Cart cart =  (Cart)getIntent().getSerializableExtra("cart");
-        Order order = new Order(1,cart);
-        OrderDetailAdapter orderDetailAdapter = new OrderDetailAdapter(order);
+        Order order = new Order();
+        OrderDetailAdapter orderDetailAdapter = new OrderDetailAdapter(order.getOrderDetailList());
 
-        orderDetailCardView = findViewById(R.id.recycler_view_cart);
+        orderDetailCardView = findViewById(R.id.recycler_view_product_order);
         orderDetailCardView.setLayoutManager(new GridLayoutManager(this, 1));
         orderDetailCardView.setAdapter(orderDetailAdapter);
         orderDetailCardView.setNestedScrollingEnabled(true);
@@ -91,7 +91,7 @@ public class OrderActivity extends AppCompatActivity {
 
         total = (TextView)findViewById(R.id.tv_invoice_total);
 
-        total.setText(String.format( "Tổng tiền: " + "%.2f VND", order.getCart().getTotalPrice()) );
+//        total.setText(String.format( "Tổng tiền: " + "%.2f VND", order.getTotalPrice()) );
 
         btnBack = (Button)findViewById(R.id.btn_cancel);
         btnBack.setOnClickListener(new View.OnClickListener() {
