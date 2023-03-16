@@ -16,18 +16,22 @@ import com.example.product_sales_application.R;
 import com.example.product_sales_application.activities.HistoryDetailActivity;
 import com.example.product_sales_application.models.Order;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapter.ViewHolder> {
     private List<Order> order;
     private Context context;
+    private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm");
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView customerName;
         public TextView customerPhone;
         public TextView orderDate;
-        public TextView orderSaler;
+        public TextView requireDate;
+
         private View view;
 
         public ViewHolder (View viewOrderHistory) {
@@ -36,7 +40,7 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             customerPhone = viewOrderHistory.findViewById(R.id.customer_phone);
             customerName = viewOrderHistory.findViewById(R.id.customer_name);
             orderDate = viewOrderHistory.findViewById(R.id.order_date);
-            orderSaler = viewOrderHistory.findViewById(R.id.order_saler);
+            requireDate = viewOrderHistory.findViewById(R.id.require_date);
         }
     }
 
@@ -61,10 +65,11 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
     @Override
     public void onBindViewHolder(@NonNull OrderHistoryAdapter.ViewHolder holder, int position) {
         Order order = this.order.get(position);
-        holder.orderSaler.setText(order.getOrderSaler());
-        holder.customerName.setText(order.getCustomerName());
-        holder.customerPhone.setText(order.getCustomerName());
-        holder.orderDate.setText(order.getOrderDate());
+        holder.customerName.setText(order.getCustomerFullName());
+        holder.customerPhone.setText(order.getCustomerPhone());
+        holder.orderDate.setText(dateFormat.format(order.getOrderedDate()));
+        holder.requireDate.setText(dateFormat.format(order.getRequiredDate()));
+
 
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override

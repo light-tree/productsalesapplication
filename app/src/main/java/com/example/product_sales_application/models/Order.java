@@ -13,14 +13,14 @@ public class Order {
     private String customerAddress;
     private Date orderedDate;
     private Date requiredDate;
-    private int staffId;
+    private Account staff;
 
     public Order(int id, Cart cart) {
         this.id = id;
         this.cart = cart;
     }
 
-    public Order(int id, Cart cart, String customerPhone, String customerFullName, String customerAddress, Date orderedDate, Date requiredDate, int staffId) {
+    public Order(int id, Cart cart, String customerPhone, String customerFullName, String customerAddress, Date orderedDate, Date requiredDate, Account staff) {
         this.id = id;
         this.cart = cart;
         this.customerPhone = customerPhone;
@@ -28,7 +28,7 @@ public class Order {
         this.customerAddress = customerAddress;
         this.orderedDate = orderedDate;
         this.requiredDate = requiredDate;
-        this.staffId = staffId;
+        this.staff = staff;
     }
 
     public int getId() {
@@ -87,11 +87,11 @@ public class Order {
         this.requiredDate = requiredDate;
     }
 
-    public int getStaffId() {
-        return staffId;
+    public Account getStaff() {
+        return staff;
     }
 
-    public void setStaffId(int staffId) {
-        this.staffId = staffId;
+    public void setStaff(Account staff) {
+        this.staff = staff;
     }
 }

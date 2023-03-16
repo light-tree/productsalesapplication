@@ -38,7 +38,15 @@
                 />
 
             <TextView
-                android:id="@+id/ed_customer_phone_number"
+                android:id="@+id/customer_fullname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Khách hàng: Phạm Văn A"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/customer_phone_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Số điện thoại: 1234567890"
@@ -47,44 +55,43 @@
                 android:textStyle="bold"/>
 
             <TextView
-                android:id="@+id/ed_customer_fullname"
+                android:id="@+id/customer_fullname_staff"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Họ tên khách hàng: Phạm Văn A"
+                android:hint="Nhân viên hỗ trợ đặt hàng: Phạm Văn B"
                 android:textSize="16sp"
                 android:textStyle="bold"/>
+            <TextView
+            android:id="@+id/staff_phone_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Số điện thoại nhân viên: 1234567890"
+            android:inputType="phone"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
 
             <TextView
-                android:id="@+id/ed_customer_fullname_staff"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Họ tên nhân viên hỗ trợ đặt hàng: Phạm Văn B"
-                android:textSize="16sp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/ed_customer_address"
+                android:id="@+id/customer_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Địa chỉ: TP.HCM"
                 android:textSize="16sp"
                 android:textStyle="bold"/>
             <TextView
+                android:id="@+id/order_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:text="Ngày đặt: 28/2/2023"/>
 
-            <!--            <Button-->
-            <!--                android:id="@+id/btn_Cart_Remove"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="40dp"-->
-            <!--                android:layout_alignParentEnd="true"-->
-            <!--                android:layout_centerVertical="true"-->
-            <!--                android:backgroundTint="#4f86f7"-->
-            <!--                android:text="Tim kiếm"-->
-            <!--                android:textColor="#ffffff" />-->
+            <TextView
+                android:id="@+id/require_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:text="Ngày hẹn giao: 28/2/2023"/>
 
             <TextView
                 android:id="@+id/tv_invoice_total"
