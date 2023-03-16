@@ -1,9 +1,5 @@
 package com.example.product_sales_application.activities;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
@@ -33,6 +29,8 @@ import com.example.product_sales_application.R;
 import com.example.product_sales_application.adapters.ProductAdapter;
 import com.example.product_sales_application.adapters.ProductTypeAdapter;
 import com.example.product_sales_application.api.ProductApi;
+import com.example.product_sales_application.manager.CartManager;
+import com.example.product_sales_application.manager.CartManagerSingleton;
 import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.models.ProductTypeDomain;
 import com.example.product_sales_application.models.RequestCode;
@@ -49,6 +47,9 @@ import retrofit2.Response;
 
 
 public class HomeActivity extends AppCompatActivity {
+
+
+
 
 
     private RecyclerView productTypeView;
@@ -79,6 +80,12 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+
+
+//        SharedPreferences preferences = this.getSharedPreferences("cart_prefs", this.MODE_PRIVATE);
+//        SharedPreferences.Editor editor = preferences.edit();
+//        editor.clear(); // xóa toàn bộ dữ liệu SharedPreferences
+//        editor.apply(); // lưu thay đổi vào SharedPreferences
         drawerLayout = findViewById(R.id.drawer_layout_home);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);

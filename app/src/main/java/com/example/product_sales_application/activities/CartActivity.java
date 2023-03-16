@@ -25,6 +25,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.product_sales_application.manager.CartManager;
+import com.example.product_sales_application.manager.CartManagerSingleton;
 import com.example.product_sales_application.models.Cart;
 import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.adapters.CartAdapter;
@@ -35,9 +37,11 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CartActivity extends AppCompatActivity {
 
+    CartManager cartManager ;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
@@ -79,15 +83,11 @@ public class CartActivity extends AppCompatActivity {
             }
             return true;
         });
+        cartManager =  CartManagerSingleton.getInstance(this);
+        List<Product> productList = cartManager.getCart();
 
-        ArrayList<Product> productList = new ArrayList<Product>();
-        productList.add(new Product(1,"Product1 1",  R.drawable.image, 100f,1,"Description of product 2"));
-        productList.add(new Product(2,"Product1 2",  R.drawable.image, 100f,1,"Description of product 2"));
-        productList.add(new Product(3,"Product1 3",  R.drawable.image, 100f,1,"Description of product 2"));
-        productList.add(new Product(1,"Product1 1",  R.drawable.image, 100f,1,"Description of product 2"));
-        productList.add(new Product(2,"Product1 2",  R.drawable.image, 100f,1,"Description of product 2"));
 
-        Cart cart = new Cart(productList);
+        Cart cart = new Cart((ArrayList<Product>) productList);
 
         cartAdapter = new CartAdapter(cart);
         cartListView = findViewById(R.id.recycler_view_cart);

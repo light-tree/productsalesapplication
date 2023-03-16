@@ -11,9 +11,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.product_sales_application.manager.CartManager;
+import com.example.product_sales_application.manager.CartManagerSingleton;
 import com.example.product_sales_application.models.Cart;
 import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.R;
+import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
@@ -31,6 +36,8 @@ public static class ViewHolder extends RecyclerView.ViewHolder {
 
 
 
+
+
     public ViewHolder (View viewProduct) {
         super(viewProduct);
         Id = (TextView) viewProduct.findViewById(R.id.tv_Id);
@@ -41,10 +48,16 @@ public static class ViewHolder extends RecyclerView.ViewHolder {
         imgProduct = (ImageView) viewProduct.findViewById(R.id.imgv_product);
         deleteButton = (Button) viewProduct.findViewById(R.id.btn_Cart_Remove);
         increaseButton = (Button) viewProduct.findViewById(R.id.increase_quantity_button);
-        decreaseButton = (Button) viewProduct.findViewById(R.id.decrease_quantity_button);    }
+        decreaseButton = (Button) viewProduct.findViewById(R.id.decrease_quantity_button);
+
+
+    }
 }
 
     private Cart cart;
+    public  Context context;
+    public CartManager cartManager ;
+
 
     public CartAdapter(Cart cart) {
         this.cart = cart;
@@ -54,7 +67,10 @@ public static class ViewHolder extends RecyclerView.ViewHolder {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
+
+        context = parent.getContext();
+        cartManager =  CartManagerSingleton.getInstance(context);
+
         LayoutInflater inflater = LayoutInflater.from(context);
 
         View contactView = inflater.inflate(R.layout.view_cart_detail, parent, false);
@@ -67,6 +83,7 @@ public static class ViewHolder extends RecyclerView.ViewHolder {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Product product = cart.getProducts().get(position);
         int index = cart.getProducts().indexOf(product);
+
 
         TextView No = holder.Id;
         No.setText(String.format("Mã Sản Phẩm: %s", product.getId()));
@@ -82,7 +99,8 @@ public static class ViewHolder extends RecyclerView.ViewHolder {
         quantity.setText(String.format(" %d ", product.getQuantity()));
 
         ImageView imageView = holder.imgProduct;
-        imageView.setImageResource(product.getImageResource());
+        Picasso.get().load(product.getUrl())
+                .into(imageView);
 
         TextView total = holder.total;
         total.setText(String.format( "Thành tiền: " + "%.2f VND", product.getQuantity() * product.getPrice()) );
@@ -91,8 +109,12 @@ public static class ViewHolder extends RecyclerView.ViewHolder {
         btnDelete.setOnClickListener(new View.OnClickListener() {
                                       @Override
                                       public void onClick(View v) {
+
+                                          List<Product> productList = cartManager.getCart();
                                           if(cart.removeProduct(product)){
                                               notifyDataSetChanged();
+                                              productList = cart.getProducts();
+                                              cartManager.saveCart(productList);
                                           }
                                       }
                                  }

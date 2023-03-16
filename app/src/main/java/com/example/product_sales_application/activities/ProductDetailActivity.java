@@ -23,6 +23,9 @@ import android.widget.Toast;
 
 import com.example.product_sales_application.R;
 import com.example.product_sales_application.api.ProductApi;
+import com.example.product_sales_application.manager.CartManager;
+import com.example.product_sales_application.manager.CartManagerSingleton;
+import com.example.product_sales_application.models.Cart;
 import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.models.RequestCode;
 import com.google.android.material.navigation.NavigationView;
@@ -53,6 +56,8 @@ public class ProductDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CartManager cartManager = CartManagerSingleton.getInstance(this);
+
         setContentView(R.layout.activity_product_detail);
         tvProductName = findViewById(R.id.name);
         tvPrice = findViewById(R.id.price);
@@ -102,6 +107,24 @@ public class ProductDetailActivity extends AppCompatActivity {
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                List<Product> productList = cartManager.getCart();
+                Product result = productList.stream()
+                        .filter(p -> p.getId() == product.getId())
+                        .findFirst()
+                        .orElse(null);
+                if(result != null){
+                    result.setQuantity(result.getQuantity()+1);
+
+                }else {
+                    product.setQuantity(1);
+                    productList.add(product);
+                }
+
+
+                cartManager.saveCart(productList);
+                startActivity((new Intent(ProductDetailActivity.this, HomeActivity.class)));
+
 
             }
         });
