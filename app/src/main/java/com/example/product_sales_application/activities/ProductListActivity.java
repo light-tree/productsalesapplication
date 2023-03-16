@@ -115,13 +115,6 @@ public class ProductListActivity extends AppCompatActivity {
 
         query = findViewById(R.id.query);
         type = findViewById(R.id.type);
-        GetProductsByType(textQueryStatic, textTypeStatic);
-        productTypeAdapter = new ProductTypeAdapter(productTypeDomainList);
-        productTypeView.setAdapter(productTypeAdapter);
-        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        productTypeView.setLayoutManager(horizontalLayoutManager);
-
-
         String textQuery = getIntent().getStringExtra("query");
         if (!TextUtils.isEmpty(textQuery)) {
             textQueryStatic = textQuery;
@@ -133,6 +126,11 @@ public class ProductListActivity extends AppCompatActivity {
             textTypeStatic = textType;
         }
         if (!TextUtils.isEmpty(textType)) type.setText("Loại sản phẩm: " + textTypeStatic);
+        GetProductsByType(textQueryStatic, textTypeStatic);
+        productTypeAdapter = new ProductTypeAdapter(productTypeDomainList);
+        productTypeView.setAdapter(productTypeAdapter);
+        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        productTypeView.setLayoutManager(horizontalLayoutManager);
     }
 
     @Override

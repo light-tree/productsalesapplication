@@ -130,6 +130,7 @@ public class HomeActivity extends AppCompatActivity {
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                intent.putExtra("query", "");
                 intent.putExtra("type", getString(R.string.product_type_1));
                 startActivity(intent);
                 finish();
@@ -138,6 +139,7 @@ public class HomeActivity extends AppCompatActivity {
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                intent.putExtra("query", "");
                 intent.putExtra("type", getString(R.string.product_type_2));
                 startActivity(intent);
                 finish();
@@ -146,6 +148,7 @@ public class HomeActivity extends AppCompatActivity {
         button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                intent.putExtra("query", "");
                 intent.putExtra("type", getString(R.string.product_type_3));
                 startActivity(intent);
                 finish();
