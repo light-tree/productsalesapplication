@@ -2,37 +2,33 @@ package com.example.product_sales_application.models;
 
 import com.example.product_sales_application.models.Cart;
 
+import java.util.Date;
 import java.util.List;
 
 public class Order {
-
     private int id;
     private Cart cart;
-    private List<Product> productList;
-    private String numberPhone;
-    private String customerName;
-    private String address;
-    private String orderDate;
-    private String orderSaler;
-
-    public String getOrderSaler() {
-        return orderSaler;
-    }
-
-    public void setOrderSaler(String orderSaler) {
-        this.orderSaler = orderSaler;
-    }
+    private String customerPhone;
+    private String customerFullName;
+    private String customerAddress;
+    private Date orderedDate;
+    private Date requiredDate;
+    private int staffId;
 
     public Order(int id, Cart cart) {
         this.id = id;
         this.cart = cart;
     }
 
-    public Order(String numberPhone, String customerName, int id, Cart cart){
-        this.numberPhone = numberPhone;
-        this.customerName = customerName;
+    public Order(int id, Cart cart, String customerPhone, String customerFullName, String customerAddress, Date orderedDate, Date requiredDate, int staffId) {
         this.id = id;
         this.cart = cart;
+        this.customerPhone = customerPhone;
+        this.customerFullName = customerFullName;
+        this.customerAddress = customerAddress;
+        this.orderedDate = orderedDate;
+        this.requiredDate = requiredDate;
+        this.staffId = staffId;
     }
 
     public int getId() {
@@ -51,43 +47,51 @@ public class Order {
         this.cart = cart;
     }
 
-    public List<Product> getProductList() {
-        return productList;
+    public String getCustomerPhone() {
+        return customerPhone;
     }
 
-    public void setProductList(List<Product> productList) {
-        this.productList = productList;
+    public void setCustomerPhone(String customerPhone) {
+        this.customerPhone = customerPhone;
     }
 
-    public String getNumberPhone() {
-        return numberPhone;
+    public String getCustomerFullName() {
+        return customerFullName;
     }
 
-    public void setNumberPhone(String numberPhone) {
-        this.numberPhone = numberPhone;
+    public void setCustomerFullName(String customerFullName) {
+        this.customerFullName = customerFullName;
     }
 
-    public String getCustomerName() {
-        return customerName;
+    public String getCustomerAddress() {
+        return customerAddress;
     }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+    public void setCustomerAddress(String customerAddress) {
+        this.customerAddress = customerAddress;
     }
 
-    public String getAddress() {
-        return address;
+    public Date getOrderedDate() {
+        return orderedDate;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setOrderedDate(Date orderedDate) {
+        this.orderedDate = orderedDate;
     }
 
-    public String getOrderDate() {
-        return orderDate;
+    public Date getRequiredDate() {
+        return requiredDate;
     }
 
-    public void setOrderDate(String orderDate) {
-        this.orderDate = orderDate;
+    public void setRequiredDate(Date requiredDate) {
+        this.requiredDate = requiredDate;
+    }
+
+    public int getStaffId() {
+        return staffId;
+    }
+
+    public void setStaffId(int staffId) {
+        this.staffId = staffId;
     }
 }

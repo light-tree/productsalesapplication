@@ -83,22 +83,22 @@ public class OrderHistoryActivity extends AppCompatActivity {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         listOrderHistory.setLayoutManager(linearLayoutManager);
 
-        listOrderHistoryData = new ArrayList<Order>() {{
-            add(new Order("0123456789", "Anh A", 1, new Cart(new ArrayList<Product>() {{
-                add(new Product(1, "Iphone10", 100f));
-                add(new Product(2, "Iphone11", 110f));
-                add(new Product(3, "Iphone12", 120f));
-                add(new Product(4, "Iphone13", 130f));
-            }}
-            )));
-            add(new Order("0987654321", "Anh B", 2, new Cart(new ArrayList<Product>() {{
-                add(new Product(1, "Iphone10", 100f));
-                add(new Product(2, "Iphone11", 110f));
-                add(new Product(3, "Iphone12", 120f));
-                add(new Product(4, "Iphone13", 130f));
-            }}
-            )));
-        }};
+//        listOrderHistoryData = new ArrayList<Order>() {{
+//            add(new Order("0123456789", "Anh A", 1, new Cart(new ArrayList<Product>() {{
+//                add(new Product(1, "Iphone10", 100f));
+//                add(new Product(2, "Iphone11", 110f));
+//                add(new Product(3, "Iphone12", 120f));
+//                add(new Product(4, "Iphone13", 130f));
+//            }}
+//            )));
+//            add(new Order("0987654321", "Anh B", 2, new Cart(new ArrayList<Product>() {{
+//                add(new Product(1, "Iphone10", 100f));
+//                add(new Product(2, "Iphone11", 110f));
+//                add(new Product(3, "Iphone12", 120f));
+//                add(new Product(4, "Iphone13", 130f));
+//            }}
+//            )));
+//        }};
         orderHistoryAdapter = new OrderHistoryAdapter(listOrderHistoryData);
         listOrderHistory.setAdapter(orderHistoryAdapter);
     }
