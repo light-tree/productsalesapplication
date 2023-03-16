@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.product_sales_application.R;
 import com.example.product_sales_application.api.ProductApi;
+import com.example.product_sales_application.manager.AccountManager;
 import com.example.product_sales_application.manager.CartManager;
 import com.example.product_sales_application.manager.CartManagerSingleton;
 import com.example.product_sales_application.models.Cart;
@@ -236,9 +237,8 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private boolean isLogin() {
-        SharedPreferences preferences = getSharedPreferences("login_status", Context.MODE_PRIVATE);
-        boolean myBool = preferences.getBoolean("isLoggedIn", false);
-        return myBool;
+        AccountManager accountManager = CartManagerSingleton.getAccountManagerInstance(this);
+        return accountManager.isLogin();
     }
 
     private void showErrorNotLogin() {

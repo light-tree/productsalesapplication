@@ -29,6 +29,7 @@ import com.example.product_sales_application.R;
 import com.example.product_sales_application.adapters.ProductAdapter;
 import com.example.product_sales_application.adapters.ProductTypeAdapter;
 import com.example.product_sales_application.api.ProductApi;
+import com.example.product_sales_application.manager.AccountManager;
 import com.example.product_sales_application.manager.CartManager;
 import com.example.product_sales_application.manager.CartManagerSingleton;
 import com.example.product_sales_application.models.Product;
@@ -75,6 +76,9 @@ public class HomeActivity extends AppCompatActivity {
     private List<Product> products2;
     private List<Product> products3;
 
+    AccountManager accountManager;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +90,7 @@ public class HomeActivity extends AppCompatActivity {
 //        SharedPreferences.Editor editor = preferences.edit();
 //        editor.clear(); // xóa toàn bộ dữ liệu SharedPreferences
 //        editor.apply(); // lưu thay đổi vào SharedPreferences
+        accountManager = CartManagerSingleton.getAccountManagerInstance(this);
         drawerLayout = findViewById(R.id.drawer_layout_home);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);
@@ -222,12 +227,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == RequestCode.HOME_LOGIN){
-            if (data.getBooleanExtra("isLogin", false)) {
-                SharedPreferences sharedPref = getSharedPreferences("login_status", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putBoolean("isLoggedIn", true);
-                editor.apply();
-            }
+            Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_LONG);
             return;
         }
 
@@ -294,10 +294,8 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        SharedPreferences sharedPref = getSharedPreferences("login_status", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putBoolean("isLoggedIn", false);
-        editor.apply();
+        AccountManager accountManager = CartManagerSingleton.getAccountManagerInstance(this);
+        accountManager.logOut();
     }
 
     public void buildRecycler(ProductAdapter productAdapter, List<Product> products, RecyclerView recyclerView, int id) {
@@ -308,9 +306,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private boolean isLogin() {
-        SharedPreferences preferences = getSharedPreferences("login_status", Context.MODE_PRIVATE);
-        boolean myBool = preferences.getBoolean("isLoggedIn", false);
-        return myBool;
+        AccountManager accountManager = CartManagerSingleton.getAccountManagerInstance(this);
+        return accountManager.isLogin();
     }
 
     private void showErrorNotLogin() {
