@@ -22,7 +22,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.product_sales_application.manager.AccountManager;
@@ -91,7 +90,7 @@ public class CartActivity extends AppCompatActivity {
         Cart cart = new Cart((ArrayList<Product>) productList);
 
         cartAdapter = new CartAdapter(cart);
-        cartListView = findViewById(R.id.recycler_view_cart);
+        cartListView = findViewById(R.id.recycler_view_product_order);
         cartListView.setLayoutManager(new GridLayoutManager(this, 1));
         cartListView.setAdapter(cartAdapter);
         cartListView.setNestedScrollingEnabled(true);

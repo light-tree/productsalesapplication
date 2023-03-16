@@ -2,10 +2,11 @@ package com.example.product_sales_application.models;
 
 import com.example.product_sales_application.models.Cart;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class Order {
+public class Order implements Serializable {
     private int id;
     private List<OrderDetail> orderDetailList;
     private String customerPhone;

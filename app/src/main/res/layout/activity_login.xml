@@ -44,6 +44,7 @@
         android:maxWidth="200dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
+        android:text="1234567890"
         android:hint="Username"/>
 
     <TextView
@@ -62,6 +63,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:inputType="textPassword"
+        android:text="1234567890"
         android:hint="Password"/>
 
     <TextView

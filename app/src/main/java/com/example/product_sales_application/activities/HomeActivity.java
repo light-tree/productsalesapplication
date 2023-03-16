@@ -291,12 +291,12 @@ public class HomeActivity extends AppCompatActivity {
         );
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        AccountManager accountManager = CartManagerSingleton.getAccountManagerInstance(this);
-        accountManager.logOut();
-    }
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        AccountManager accountManager = CartManagerSingleton.getAccountManagerInstance(this);
+//        accountManager.logOut();
+//    }
 
     public void buildRecycler(ProductAdapter productAdapter, List<Product> products, RecyclerView recyclerView, int id) {
         productAdapter = new ProductAdapter(products);

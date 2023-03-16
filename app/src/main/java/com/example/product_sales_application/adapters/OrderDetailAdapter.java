@@ -57,7 +57,6 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
         this.orderDetailList = orderDetailList;
     }
 
-
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
@@ -85,8 +84,11 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
 
     @Override
     public int getItemCount() {
-        return orderDetailList.size();
+        return orderDetailList != null ? orderDetailList.size() : 0;
     }
 
-
+    public void setOrderDetailList(List<OrderDetail> list){
+        this.orderDetailList = list;
+        notifyDataSetChanged();
+    }
 }

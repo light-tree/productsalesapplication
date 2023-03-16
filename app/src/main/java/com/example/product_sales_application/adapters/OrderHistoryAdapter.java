@@ -5,23 +5,23 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.product_sales_application.R;
 import com.example.product_sales_application.activities.HistoryDetailActivity;
 import com.example.product_sales_application.models.Order;
+import com.google.gson.Gson;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapter.ViewHolder> {
-    private List<Order> order;
+    private List<Order> orderList;
     private Context context;
     private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm");
 
@@ -46,7 +46,7 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
 
 
     public OrderHistoryAdapter(List<Order> order) {
-        this.order = order;
+        this.orderList = order;
     }
 
 
@@ -64,7 +64,7 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
 
     @Override
     public void onBindViewHolder(@NonNull OrderHistoryAdapter.ViewHolder holder, int position) {
-        Order order = this.order.get(position);
+        Order order = this.orderList.get(position);
         holder.customerName.setText(order.getCustomerFullName());
         holder.customerPhone.setText(order.getCustomerPhone());
         holder.orderDate.setText(dateFormat.format(order.getOrderedDate()));
@@ -73,13 +73,20 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                context.startActivity(new Intent(context, HistoryDetailActivity.class));
+                Intent intent = new Intent(context, HistoryDetailActivity.class);
+                intent.putExtra("order", new Gson().toJson(order));
+                context.startActivity(intent);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return order != null ? order.size() : 0;
+        return orderList != null ? orderList.size() : 0;
+    }
+
+    public void setOrderList(List<Order> orderList){
+        this.orderList = orderList;
+        this.notifyDataSetChanged();
     }
 }
