@@ -20,7 +20,7 @@ public interface OrderApi {
             .create();
 
     OrderApi orderApi = new Retrofit.Builder()
-            .baseUrl("https://64100418864814e5b644ce99.mockapi.io/order/")
+            .baseUrl("https://64131f54b1ea744303239a5d.mockapi.io/sale-product/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(OrderApi.class);

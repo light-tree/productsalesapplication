@@ -64,6 +64,8 @@ public class OrderActivity extends AppCompatActivity {
     private TextView customerName;
     private TextView customerPhone;
     private TextView customerAddress;
+    SharedPreferences preferences;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +106,8 @@ public class OrderActivity extends AppCompatActivity {
         orderDetailList = new ArrayList<>();
         cart =  new Cart((ArrayList<Product>) cartManager.getCart());
         getProductFromCart(cart);
+         preferences = this.getSharedPreferences("cart_prefs", this.MODE_PRIVATE);
+         editor = preferences.edit();
 
         OrderDetailAdapter orderDetailAdapter = new OrderDetailAdapter(orderDetailList);
 
@@ -128,8 +132,15 @@ public class OrderActivity extends AppCompatActivity {
         btnConfirmCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int id = 0;
-                checkOut(id);
+
+                if(isLogin()){
+                    confirmCheckOut();
+                    checkOut();
+
+
+                } else {
+                    showErrorNotLogin();
+                }
 
             }
         });
@@ -261,7 +272,7 @@ public class OrderActivity extends AppCompatActivity {
                 orderDetailList.add( new OrderDetail(p.getQuantity(), p));
         }
     }
-    private void checkOut(int id){
+    private void checkOut(){
         Order order = new Order();
         order.setCustomerAddress(customerAddress.getText().toString());
         order.setCustomerFullName(customerName.getText().toString());
@@ -273,18 +284,20 @@ public class OrderActivity extends AppCompatActivity {
 
         order.setStaff( accountManager.getAccount());
 
-        order.setId(id);
+
         order.setOrderDetailList(orderDetailList);
         order.setStaff(null);
         OrderApi.orderApi.createOrder(order).enqueue(
                 new Callback<Order>() {
                     @Override
                     public void onResponse(retrofit2.Call<Order> call, Response<Order> response) {
-                        Intent intent = new Intent(OrderActivity.this, HomeActivity.class);
+                        editor.clear(); // xóa toàn bộ dữ liệu SharedPreferences
+                        editor.apply(); // lưu thay đổi vào SharedPreferences
 
 
 
-                        startActivity(intent);
+
+
                     }
 
                     @Override
@@ -294,4 +307,21 @@ public class OrderActivity extends AppCompatActivity {
                 }
         );
     }
+
+    private void confirmCheckOut() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Xác nhận đơn hàng");
+        builder.setMessage("Bạn có muốn thực hiện đặt hàng?");
+        builder.setPositiveButton("Xác nhận", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(OrderActivity.this, HomeActivity.class);
+                startActivity(intent);
+            }
+        });
+        builder.setNegativeButton("Đóng", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
 }
