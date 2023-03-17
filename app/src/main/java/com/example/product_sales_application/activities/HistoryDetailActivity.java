@@ -141,6 +141,9 @@ public class HistoryDetailActivity extends AppCompatActivity {
         List<Double> totalPrice = new ArrayList<>();
         orderDetailList.stream()
                 .forEach(element -> {
+                    if(totalPrice.size() == 0){
+                        totalPrice.add(0D);
+                    }
                     double tmp = totalPrice.get(0) + element.getQuantity() * element.getProduct().getPrice();
                     totalPrice.set(0, tmp);
                 });

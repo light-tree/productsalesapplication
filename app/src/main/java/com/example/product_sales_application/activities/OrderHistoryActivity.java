@@ -180,16 +180,6 @@ public class OrderHistoryActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RequestCode.HOME_LOGIN) {
-            if (data.getBooleanExtra("isLogin", false)) {
-                SharedPreferences sharedPref = getSharedPreferences("login_status", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putBoolean("isLoggedIn", true);
-                editor.apply();
-            }
-            return;
-        }
-
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
         if (result != null) {

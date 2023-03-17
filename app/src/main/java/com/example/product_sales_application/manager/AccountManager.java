@@ -26,6 +26,8 @@ public class AccountManager {
     }
 
     public void saveAccount(Account account) {
+        account.setPassword("");
+        account.setUsername("");
         String accountJson = mGson.toJson(account);
         mPrefs.edit().putString(KEY_ACCOUNT, accountJson).apply();
     }
