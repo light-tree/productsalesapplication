@@ -43,7 +43,10 @@
                 android:layout_height="wrap_content"
                 android:hint="Số điện thoại"
                 android:inputType="phone"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:singleLine="true"
+                android:imeOptions="actionSearch"
+                />
 
             <EditText
                 android:id="@+id/ed_customer_fullname"

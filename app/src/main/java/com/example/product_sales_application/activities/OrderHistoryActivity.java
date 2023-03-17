@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -215,23 +216,36 @@ public class OrderHistoryActivity extends AppCompatActivity {
     }
 
     private void getAllOrderDetail() {
+        ProgressDialog dialog=new ProgressDialog(this);
+        dialog.setMessage("Đang tìm kiếm đơn hàng.");
+        dialog.setCancelable(false);
+        dialog.setInverseBackgroundForced(false);
+        dialog.show();
         OrderApi.orderApi.getAllOrderHistory().enqueue(
                 new Callback<List<Order>>() {
                     @Override
                     public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
                         listOrderHistoryData = response.body();
                         orderHistoryAdapter.setOrderList(listOrderHistoryData);
+                        dialog.hide();
                     }
 
                     @Override
                     public void onFailure(Call<List<Order>> call, Throwable t) {
                         Toast.makeText(OrderHistoryActivity.this, "Lỗi không thể lấy dữ liệu", Toast.LENGTH_LONG);
+                        dialog.hide();
                     }
                 }
         );
     }
 
     private void getOrderWithPhone(String phone) {
+        ProgressDialog dialog= new ProgressDialog(this);
+        dialog.setMessage("Đang tìm kiếm đơn hàng.");
+        dialog.setCancelable(false);
+        dialog.setInverseBackgroundForced(false);
+        dialog.show();
+
         OrderApi.orderApi.getAllOrderHistory().enqueue(
                 new Callback<List<Order>>() {
                     @Override
@@ -244,11 +258,13 @@ public class OrderHistoryActivity extends AppCompatActivity {
                                 )
                                 .collect(Collectors.toList());
                         orderHistoryAdapter.setOrderList(listOrderHistoryData);
+                        dialog.hide();
                     }
 
                     @Override
                     public void onFailure(Call<List<Order>> call, Throwable t) {
                         Toast.makeText(OrderHistoryActivity.this, "Lỗi không thể lấy dữ liệu", Toast.LENGTH_LONG);
+                        dialog.hide();
                     }
                 }
         );

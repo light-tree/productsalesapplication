@@ -13,6 +13,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -65,7 +66,11 @@ public class HistoryDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history_detail);
-
+        ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setMessage("Đang tải...");
+        dialog.setCancelable(false);
+        dialog.setInverseBackgroundForced(false);
+        dialog.show();
         initUI();
         order = new Gson().fromJson(getIntent().getStringExtra("order"), Order.class);
         initDataViewOrderDetail(order);
@@ -76,6 +81,8 @@ public class HistoryDetailActivity extends AppCompatActivity {
                 onBackPressed(); // Quay trở lại Activity trước đó
             }
         });
+
+        dialog.hide();
     }
 
     private void initUI() {
@@ -136,7 +143,7 @@ public class HistoryDetailActivity extends AppCompatActivity {
         List<Double> totalPrice = new ArrayList<>();
         orderDetailList.stream()
                 .forEach(element -> {
-                    if(totalPrice.size() == 0){
+                    if (totalPrice.size() == 0) {
                         totalPrice.add(0D);
                     }
                     double tmp = totalPrice.get(0) + element.getQuantity() * element.getProduct().getPrice();

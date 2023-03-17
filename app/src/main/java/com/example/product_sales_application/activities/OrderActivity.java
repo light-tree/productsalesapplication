@@ -13,15 +13,19 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -144,6 +148,63 @@ public class OrderActivity extends AppCompatActivity {
 
             }
         });
+
+        customerPhone.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_UNSPECIFIED) {
+                    GetCustomerByPhone();
+//                    setContentView();
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    private void GetCustomerByPhone(){
+        if(!isLogin()){
+            return;
+        }
+
+        String strCustomerPhone = customerPhone.getText().toString().trim();
+        if(strCustomerPhone.length() != 10){
+            customerPhone.setError("Số điện thoại phải dài 10 kí tự.");
+            return;
+        }
+
+        ProgressDialog dialog=new ProgressDialog(this);
+        dialog.setMessage("Đang tìm kiếm khách hàng");
+        dialog.setCancelable(false);
+        dialog.setInverseBackgroundForced(false);
+        dialog.show();
+
+        OrderApi.orderApi.getAllOrderByPhone(strCustomerPhone, "id", "desc").enqueue(
+                new Callback<List<Order>>() {
+                    @Override
+                    public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
+                        List<Order> list =  response.body();
+
+                        if(list.size() == 0){
+                            Toast.makeText(OrderActivity.this, "Số điện thoại không có trong hệ thống.", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        customerAddress.setText(list.get(0).getCustomerAddress());
+                        customerName.setText(list.get(0).getCustomerFullName());
+                        dialog.hide();
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Order>> call, Throwable t) {
+                        Toast.makeText(OrderActivity.this, "Lỗi xảy ra khi tìm kiếm thông tin.", Toast.LENGTH_LONG).show();
+                        dialog.hide();
+                        return;
+                    }
+                }
+        );
+
+
     }
 
     @Override
