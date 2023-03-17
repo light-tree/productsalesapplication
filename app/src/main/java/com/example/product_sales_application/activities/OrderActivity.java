@@ -14,25 +14,31 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.product_sales_application.MainActivity;
 import com.example.product_sales_application.api.OrderApi;
 import com.example.product_sales_application.manager.AccountManager;
 import com.example.product_sales_application.manager.CartManager;
 import com.example.product_sales_application.manager.CartManagerSingleton;
+import com.example.product_sales_application.models.Account;
 import com.example.product_sales_application.models.Cart;
 import com.example.product_sales_application.models.Order;
 import com.example.product_sales_application.adapters.OrderDetailAdapter;
@@ -44,10 +50,17 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,8 +81,10 @@ public class OrderActivity extends AppCompatActivity {
     private TextView customerName;
     private TextView customerPhone;
     private TextView customerAddress;
+    private EditText requiredDate;
     SharedPreferences preferences;
     SharedPreferences.Editor editor;
+    AccountManager accountManager ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +94,8 @@ public class OrderActivity extends AppCompatActivity {
         customerName = (TextView)findViewById(R.id.ed_customer_fullname);
         customerPhone = (TextView)findViewById(R.id.ed_customer_phone_number);
         customerAddress = (TextView)findViewById(R.id.ed_customer_address);
+        accountManager = CartManagerSingleton.getAccountManagerInstance(this);
+
 
         drawerLayout = findViewById(R.id.drawer_layout_order);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
@@ -106,6 +123,122 @@ public class OrderActivity extends AppCompatActivity {
             }
             return true;
         });
+       requiredDate = findViewById(R.id.ed_required_date);
+        requiredDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+                Calendar minDateCalendar = Calendar.getInstance();
+                minDateCalendar.add(Calendar.DAY_OF_MONTH, 0);
+                Calendar maxDateCalendar = Calendar.getInstance();
+                maxDateCalendar.add(Calendar.DAY_OF_MONTH, 7); // Thêm 7 ngày để có được ngày max date
+
+                DatePickerDialog datePickerDialog = new DatePickerDialog(OrderActivity.this,
+                        new DatePickerDialog.OnDateSetListener() {
+
+                            @Override
+                            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                                dayOfMonth += 1;
+                                month += 1;
+                                String dayOfMonthStr = dayOfMonth < 10 ? "0" + dayOfMonth : String.valueOf(dayOfMonth);
+                                String monthStr = month < 10 ? "0" + month : String.valueOf(month);
+                                String yearStr = String.valueOf(year);
+
+                                String dateStr = (dayOfMonthStr) + "/" + (monthStr) + "/" + yearStr;
+
+                                requiredDate.setText(dateStr);
+                                // Thiết lập ngày đã chọn vào EditText
+                              //  requiredDate.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
+                                isDateValid(requiredDate.getText().toString());
+
+                            }
+                        }, year, month, day);
+
+                datePickerDialog.getDatePicker().setMinDate(minDateCalendar.getTimeInMillis());
+                datePickerDialog.getDatePicker().setMaxDate(maxDateCalendar.getTimeInMillis());
+                datePickerDialog.show();
+            }
+        });
+        requiredDate.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Không cần xử lý gì ở đây
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String userInput = s.toString();
+                isDateValid(userInput);
+            }
+        });
+
+        customerPhone.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Không cần xử lý gì ở đây
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+        @Override
+            public void afterTextChanged(Editable s) {
+            String userInput = s.toString();
+            isPhoneValid(userInput);
+
+            }
+        });
+
+        customerName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Không cần xử lý gì ở đây
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                String userInput = s.toString();
+                isFullNameValid(userInput);
+
+            }
+        });
+
+        customerAddress.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Không cần xử lý gì ở đây
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                String userInput = s.toString();
+                isAddressValid(userInput);
+
+
+
+            }
+        });
+
+
         CartManager cartManager = CartManagerSingleton.getInstance(this);
         orderDetailList = new ArrayList<>();
         cart =  new Cart((ArrayList<Product>) cartManager.getCart());
@@ -121,9 +254,25 @@ public class OrderActivity extends AppCompatActivity {
         orderDetailCardView.setNestedScrollingEnabled(true);
 
 
-        total = (TextView)findViewById(R.id.tv_invoice_total);
 
-        total.setText(String.format( "Tổng tiền: " + "%.2f VND", cart.getTotalPrice()) );
+
+        TextView total = findViewById(R.id.tv_invoice_total);
+
+        double totalPrice = cart.getTotalPrice();
+
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        decimalFormat.setRoundingMode(RoundingMode.DOWN);
+        String formattedMoney = decimalFormat.format(totalPrice);
+
+        if (formattedMoney.endsWith(".00")) {
+            formattedMoney = formattedMoney.substring(0, formattedMoney.indexOf("."));
+        }
+
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
+        String currency = currencyFormat.format(totalPrice);
+
+
+        total.setText("Thành tiền: " + currency ) ;
 
         btnBack = (Button)findViewById(R.id.btn_cancel);
         btnBack.setOnClickListener(new View.OnClickListener() {
@@ -138,17 +287,15 @@ public class OrderActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 if(isLogin()){
-                    confirmCheckOut();
-                    checkOut();
-
-
+                    if(checkValidate(requiredDate.getText().toString(), customerName.getText().toString(), customerPhone.getText().toString(), customerAddress.getText().toString())) {
+                       confirmCheckOut();
+                    }
                 } else {
                     showErrorNotLogin();
                 }
 
             }
         });
-
         customerPhone.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -161,7 +308,6 @@ public class OrderActivity extends AppCompatActivity {
             }
         });
     }
-
     private void GetCustomerByPhone(){
         if(!isLogin()){
             return;
@@ -203,8 +349,6 @@ public class OrderActivity extends AppCompatActivity {
                     }
                 }
         );
-
-
     }
 
     @Override
@@ -221,7 +365,6 @@ public class OrderActivity extends AppCompatActivity {
                 finish();
                 return false;
             }
-
             @Override
             public boolean onQueryTextChange(String newText) {
                 // Xử lý khi thay đổi nội dung search query
@@ -333,31 +476,23 @@ public class OrderActivity extends AppCompatActivity {
                 orderDetailList.add( new OrderDetail(p.getQuantity(), p));
         }
     }
-    private void checkOut(){
+    private void checkOut(Account staffAccount){
         Order order = new Order();
         order.setCustomerAddress(customerAddress.getText().toString());
         order.setCustomerFullName(customerName.getText().toString());
         order.setCustomerPhone(customerPhone.getText().toString());
         Date today = new Date();
         order.setOrderedDate(today);
-        order.setRequiredDate(today);
-        AccountManager accountManager = CartManagerSingleton.getAccountManagerInstance(this);
-
-        order.setStaff( accountManager.getAccount());
-
-
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        order.setRequiredDate(convertStringToDate(requiredDate.getText().toString()));
+        order.setStaff(staffAccount);
         order.setOrderDetailList(orderDetailList);
-        order.setStaff(null);
         OrderApi.orderApi.createOrder(order).enqueue(
                 new Callback<Order>() {
                     @Override
                     public void onResponse(retrofit2.Call<Order> call, Response<Order> response) {
                         editor.clear(); // xóa toàn bộ dữ liệu SharedPreferences
                         editor.apply(); // lưu thay đổi vào SharedPreferences
-
-
-
-
 
                     }
 
@@ -369,20 +504,113 @@ public class OrderActivity extends AppCompatActivity {
         );
     }
 
-    private void confirmCheckOut() {
+    private boolean confirmCheckOut() {
+        boolean check = true;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Xác nhận đơn hàng");
         builder.setMessage("Bạn có muốn thực hiện đặt hàng?");
         builder.setPositiveButton("Xác nhận", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                Account account = accountManager.getAccount();
+
+                checkOut(account);
                 Intent intent = new Intent(OrderActivity.this, HomeActivity.class);
                 startActivity(intent);
             }
         });
-        builder.setNegativeButton("Đóng", null);
+        builder.setNegativeButton("Đóng", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
         AlertDialog dialog = builder.create();
         dialog.show();
+        return check;
+    }
+
+    private boolean isDateValid(String date) {
+        boolean check = true;
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        Calendar currentDate = Calendar.getInstance();
+        currentDate.setTime(new Date());
+
+        Calendar maxDate = Calendar.getInstance();
+        currentDate.setTime(new Date());
+
+        maxDate.add(Calendar.DATE, 7); // Tối đã là 7 ngày kể từ ngày hôm nay
+
+
+        try {
+            Date selectedDate = sdf.parse(date);
+            Calendar selectedDateCal = Calendar.getInstance();
+            selectedDateCal.setTime(selectedDate);
+
+            if (selectedDateCal.compareTo(currentDate) < 0 || selectedDateCal.compareTo(maxDate) > 0) {
+                requiredDate.setError("Vui lòng nhập ngày giao hàng hợp lệ, trong vòng 7 ngày kể từ ngày hôm nay");
+                check = false;
+
+            } else {
+               check = true;
+            }
+
+        } catch (ParseException e) {
+            // Ngày đã nhập không đúng định dạng
+            check = false;
+            requiredDate.setError("Vui lòng nhập ngày giao hàng hợp lệ, trong vòng 7 ngày kể từ ngày hôm nay");
+        }
+        return check;
+
+    }
+    private boolean isPhoneValid(String phone) {
+        String regex = "0[0-9]{9,10}";
+        boolean check = true;
+        if(!phone.matches(regex)){
+           customerPhone.setError("Số điện thoại không hợp lệ");
+           check = false;
+        }
+        return check ;
+    }
+    private boolean isFullNameValid(String fullName){
+        boolean check = true;
+         if(( fullName.isEmpty()
+                 || fullName == null
+                 || fullName.length() < 8
+                 || fullName.length() > 40)){
+             customerName.setError("Tên phải từ 8 đến 40 kí tự ");
+             check = false;
+         }
+         return check;
+    }
+
+    private boolean isAddressValid(String address){
+        boolean check = true;
+        if((address.isEmpty()
+                || address == null
+                || address.length() < 8
+                || address.length() > 128)){
+            customerAddress.setError("Địa chỉ phải trên 8 kí tự ");
+            check = false;
+
+        }
+        return check;
+    }
+
+    private boolean checkValidate(String date, String fullName, String phone, String address){
+        return ( isFullNameValid(fullName) &&  isPhoneValid(phone) && isDateValid(date)  &&  isAddressValid(address) );
+    }
+
+    private Date convertStringToDate(String input){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        Date date = null;
+        try {
+           date = dateFormat.parse(input);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
     }
 
 }
