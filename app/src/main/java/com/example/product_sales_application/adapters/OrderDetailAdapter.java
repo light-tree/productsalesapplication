@@ -14,6 +14,7 @@ import com.example.product_sales_application.models.Order;
 import com.example.product_sales_application.models.OrderDetail;
 import com.example.product_sales_application.R;
 import com.example.product_sales_application.models.Product;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -72,10 +73,11 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
         price.setText(String.format("Giá: %.2f", product.getPrice()));
 
         TextView quantity = holder.quantity;
-        quantity.setText(String.format(" %d ", product.getQuantity()));
+        quantity.setText(String.format("Số lượng: %d ", product.getQuantity()));
 
         ImageView imageView = holder.imgProduct;
-        imageView.setImageResource(product.getImageResource());
+        Picasso.get().load(product.getUrl())
+                .into(imageView);
 
         TextView subTotal = holder.subTotal;
         subTotal.setText(String.format( "Thành tiền: " + "%.2f VND", product.getQuantity() * product.getPrice()) );

@@ -34,10 +34,6 @@ public static class ViewHolder extends RecyclerView.ViewHolder {
     public Button increaseButton;
     public  Button decreaseButton;
 
-
-
-
-
     public ViewHolder (View viewProduct) {
         super(viewProduct);
         Id = (TextView) viewProduct.findViewById(R.id.tv_Id);
@@ -49,8 +45,6 @@ public static class ViewHolder extends RecyclerView.ViewHolder {
         deleteButton = (Button) viewProduct.findViewById(R.id.btn_Cart_Remove);
         increaseButton = (Button) viewProduct.findViewById(R.id.increase_quantity_button);
         decreaseButton = (Button) viewProduct.findViewById(R.id.decrease_quantity_button);
-
-
     }
 }
 
