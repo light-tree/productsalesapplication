@@ -7,15 +7,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.display.DeviceProductInfo;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +32,7 @@ import com.example.product_sales_application.manager.AccountManager;
 import com.example.product_sales_application.manager.CartManager;
 import com.example.product_sales_application.manager.CartManagerSingleton;
 import com.example.product_sales_application.models.Cart;
+import com.example.product_sales_application.models.OrderDetail;
 import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.models.RequestCode;
 import com.google.android.material.navigation.NavigationView;
@@ -52,12 +58,25 @@ public class ProductDetailActivity extends AppCompatActivity {
     private TextView tvDescription;
     private TextView tvPrice;
     private ImageView imageView;
-
+    private OrderDetail orderDetail;
     private Product product;
+    private ProgressDialog dialog;
+
+    private Button btnDecrease;
+    private Button btnIncrease;
+    private Button btnClose;
+    private TextView quantity;
+    private ImageView imgViewProduct;
+    private TextView tvPriceQuantity;
+    private TextView tvProductTotalPrice;
+    private TextView tvErrorQuantity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        CartManager cartManager = CartManagerSingleton.getInstance(this);
+        dialog = new ProgressDialog(this);
+        dialog.setCancelable(false);
+        dialog.setInverseBackgroundForced(true);
 
         setContentView(R.layout.activity_product_detail);
         tvProductName = findViewById(R.id.name);
@@ -84,7 +103,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                 }
                 case R.id.order_history: {
                     drawerLayout.close();
-                    if(!isLogin()){
+                    if (!isLogin()) {
                         showErrorNotLogin();
                         return false;
                     }
@@ -108,30 +127,15 @@ public class ProductDetailActivity extends AppCompatActivity {
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                List<Product> productList = cartManager.getCart();
-                Product result = productList.stream()
-                        .filter(p -> p.getId() == product.getId())
-                        .findFirst()
-                        .orElse(null);
-                if(result != null){
-                    result.setQuantity(result.getQuantity()+1);
-
-                }else {
-                    product.setQuantity(1);
-                    productList.add(product);
-                }
-
-
-                cartManager.saveCart(productList);
-                startActivity((new Intent(ProductDetailActivity.this, HomeActivity.class)));
-
-
+                initPopupChooseQuantity(product);
             }
         });
     }
 
     private void getProductById(int productId) {
+        dialog.setMessage("Đang tìm kiếm đơn hàng.");
+        dialog.show();
+
         ProductApi.productApi.getProductById(productId).enqueue(
                 new Callback<Product>() {
                     @Override
@@ -142,11 +146,18 @@ public class ProductDetailActivity extends AppCompatActivity {
                         tvProductName.setText(product.getName());
                         tvPrice.setText(String.format("%.0f VND", product.getPrice()));
                         tvDescription.setText(product.getDescription());
+                        orderDetail = new OrderDetail();
+                        orderDetail.setProduct(product);
+                        orderDetail.setQuantity(1);
+                        dialog.hide();
                     }
 
                     @Override
                     public void onFailure(Call<Product> call, Throwable t) {
                         product = null;
+                        Toast.makeText(ProductDetailActivity.this, "Không tìm thấy sản phẩm.", Toast.LENGTH_LONG).show();
+                        dialog.hide();
+                        finish();
                     }
                 }
         );
@@ -156,7 +167,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == RequestCode.HOME_LOGIN){
+        if (requestCode == RequestCode.HOME_LOGIN) {
             if (data.getBooleanExtra("isLogin", false)) {
                 SharedPreferences sharedPref = getSharedPreferences("login_status", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
@@ -214,7 +225,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         }
 
         if (id == R.id.scanner) {
-            if(!isLogin()){
+            if (!isLogin()) {
                 showErrorNotLogin();
                 return false;
             }
@@ -255,5 +266,124 @@ public class ProductDetailActivity extends AppCompatActivity {
         builder.setNegativeButton("Đóng", null);
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    private void initPopupChooseQuantity(Product p) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogLayout = inflater.inflate(R.layout.layout_choose_quantity_product, null);
+
+        btnDecrease = dialogLayout.findViewById(R.id.btn_decrease);
+        btnIncrease = dialogLayout.findViewById(R.id.btn_increase);
+        btnClose = dialogLayout.findViewById(R.id.close_choose_quantity_popup);
+        quantity = dialogLayout.findViewById(R.id.tv_quantity);
+        imgViewProduct = dialogLayout.findViewById(R.id.image_product_quantity);
+        tvPriceQuantity = dialogLayout.findViewById(R.id.tv_product_price_quantity);
+        tvProductTotalPrice = dialogLayout.findViewById(R.id.tv_total_price_quantity);
+        tvErrorQuantity = dialogLayout.findViewById(R.id.error_quantity);
+
+        Picasso.get().load(p.getUrl())
+                .into(imgViewProduct);
+        tvPriceQuantity.setText(String.format("Giá: %.2f", p.getPrice()));
+        tvProductTotalPrice.setText(String.format("Giá: %.2f", p.getPrice() * orderDetail.getQuantity()));
+
+
+
+
+        builder.setView(dialogLayout);
+
+        builder.setPositiveButton("Thêm", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                CartManager cartManager = CartManagerSingleton.getInstance(ProductDetailActivity.this);
+                List<Product> productList = cartManager.getCart();
+                Product result = productList.stream()
+                        .filter(p -> p.getId() == product.getId())
+                        .findFirst()
+                        .orElse(null);
+                if (result != null) {
+                    result.setQuantity(result.getQuantity() + orderDetail.getQuantity());
+
+                } else {
+                    product.setQuantity(orderDetail.getQuantity());
+                    productList.add(product);
+                }
+                cartManager.saveCart(productList);
+//                startActivity((new Intent(ProductDetailActivity.this, HomeActivity.class)));
+                finish();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        layoutParams.copyFrom(alertDialog.getWindow().getAttributes());
+        layoutParams.gravity = Gravity.BOTTOM;
+
+        alertDialog.getWindow().setAttributes(layoutParams);
+        alertDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+        alertDialog.show();
+
+        btnIncrease.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateQuantity(true, alertDialog);
+            }
+        });
+
+        btnDecrease.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateQuantity(false, alertDialog);
+            }
+        });
+
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+    }
+
+    private void updateQuantity(boolean isIncrease, AlertDialog alertDialog) {
+        dialog.setMessage("Kiểm tra số lượng");
+        dialog.show();
+        alertDialog.hide();
+
+        ProductApi.productApi.getProductById(product.getId()).enqueue(
+                new Callback<Product>() {
+                    @Override
+                    public void onResponse(retrofit2.Call<Product> call, Response<Product> response) {
+                        product = response.body();
+                        if (isIncrease) {
+                            if (orderDetail.getQuantity() < product.getQuantity()) {
+                                orderDetail.setQuantity(orderDetail.getQuantity() + 1);
+                                tvErrorQuantity.setText("");
+                            } else {
+                                tvErrorQuantity.setText("Số lượng đã tối đa.");
+                            }
+                        } else {
+                            orderDetail.setQuantity(orderDetail.getQuantity() > 1 ? orderDetail.getQuantity() - 1 : 1);
+                            tvErrorQuantity.setText("");
+                        }
+
+                        quantity.setText(String.format("%d", orderDetail.getQuantity()));
+                        tvProductTotalPrice.setText(String.format("Giá: %.2f", product.getPrice() * orderDetail.getQuantity()));
+                        dialog.hide();
+                        alertDialog.show();
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Product> call, Throwable t) {
+                        product = null;
+                        Toast.makeText(ProductDetailActivity.this, "Không tìm thấy sản phẩm.", Toast.LENGTH_LONG).show();
+                        dialog.hide();
+                        finish();
+                    }
+                }
+        );
     }
 }
