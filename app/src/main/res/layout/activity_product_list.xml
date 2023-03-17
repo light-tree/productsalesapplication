@@ -49,14 +49,14 @@
             app:cardPreventCornerOverlap="false"
             />
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+<!--        <ScrollView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content">-->
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="vertical">-->
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/product_recycler"
@@ -67,18 +67,18 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <Button
-                    android:id="@+id/view_more_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/white"
-                    android:shadowRadius="@integer/material_motion_duration_short_2"
-                    android:text="@string/more"
-                    android:textColor="@color/primary_outside_app"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/product_recycler" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </ScrollView>
+<!--                <Button-->
+<!--                    android:id="@+id/view_more_button"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:backgroundTint="@color/white"-->
+<!--                    android:shadowRadius="@integer/material_motion_duration_short_2"-->
+<!--                    android:text="@string/more"-->
+<!--                    android:textColor="@color/primary_outside_app"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/product_recycler" />-->
+<!--            </LinearLayout>-->
+<!--        </ScrollView>-->
     </LinearLayout>
 </androidx.drawerlayout.widget.DrawerLayout>

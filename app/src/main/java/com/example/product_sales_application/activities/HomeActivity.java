@@ -1,22 +1,26 @@
 package com.example.product_sales_application.activities;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+
 import androidx.appcompat.widget.SearchView;
 
 import android.widget.Toast;
@@ -25,8 +29,12 @@ import com.example.product_sales_application.R;
 import com.example.product_sales_application.adapters.ProductAdapter;
 import com.example.product_sales_application.adapters.ProductTypeAdapter;
 import com.example.product_sales_application.api.ProductApi;
+import com.example.product_sales_application.manager.AccountManager;
+import com.example.product_sales_application.manager.CartManager;
+import com.example.product_sales_application.manager.CartManagerSingleton;
 import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.models.ProductTypeDomain;
+import com.example.product_sales_application.models.RequestCode;
 import com.google.android.material.navigation.NavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -40,6 +48,9 @@ import retrofit2.Response;
 
 
 public class HomeActivity extends AppCompatActivity {
+
+
+
 
 
     private RecyclerView productTypeView;
@@ -65,11 +76,21 @@ public class HomeActivity extends AppCompatActivity {
     private List<Product> products2;
     private List<Product> products3;
 
+    AccountManager accountManager;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+
+
+//        SharedPreferences preferences = this.getSharedPreferences("cart_prefs", this.MODE_PRIVATE);
+//        SharedPreferences.Editor editor = preferences.edit();
+//        editor.clear(); // xóa toàn bộ dữ liệu SharedPreferences
+//        editor.apply(); // lưu thay đổi vào SharedPreferences
+        accountManager = CartManagerSingleton.getAccountManagerInstance(this);
         drawerLayout = findViewById(R.id.drawer_layout_home);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);
@@ -81,11 +102,15 @@ public class HomeActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.login: {
                     drawerLayout.close();
-                    startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+                    startActivityForResult(new Intent(HomeActivity.this, LoginActivity.class), RequestCode.HOME_LOGIN);
                     return true;
                 }
                 case R.id.order_history: {
                     drawerLayout.close();
+                    if(!isLogin()){
+                        showErrorNotLogin();
+                        return false;
+                    }
                     startActivity(new Intent(HomeActivity.this, OrderHistoryActivity.class));
                     return true;
                 }
@@ -117,6 +142,7 @@ public class HomeActivity extends AppCompatActivity {
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                intent.putExtra("query", "");
                 intent.putExtra("type", getString(R.string.product_type_1));
                 startActivity(intent);
                 finish();
@@ -125,6 +151,7 @@ public class HomeActivity extends AppCompatActivity {
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                intent.putExtra("query", "");
                 intent.putExtra("type", getString(R.string.product_type_2));
                 startActivity(intent);
                 finish();
@@ -133,6 +160,7 @@ public class HomeActivity extends AppCompatActivity {
         button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                intent.putExtra("query", "");
                 intent.putExtra("type", getString(R.string.product_type_3));
                 startActivity(intent);
                 finish();
@@ -173,11 +201,15 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         if (id == R.id.scanner) {
+            if(!isLogin()){
+                showErrorNotLogin();
+                return false;
+            }
             scannerCode();
         }
 
         if (id == R.id.cart) {
-            startActivity(new Intent(HomeActivity.this, CartActivity.class));
+            startActivity(new Intent(this, CartActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
@@ -187,13 +219,18 @@ public class HomeActivity extends AppCompatActivity {
         intentIntegrator.setPrompt("Scan a barcode for QRcode");
         intentIntegrator.setOrientationLocked(false);
         intentIntegrator.setCameraId(0);
-//        intentIntegrator.setRequestCode(1);
         intentIntegrator.initiateScan();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == RequestCode.HOME_LOGIN){
+            Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_LONG);
+            return;
+        }
+
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
         if (result != null) {
@@ -210,7 +247,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void getProduct() {
-        ProductApi.productApi.getAllProductByTypeWithPaging(getString(R.string.product_type_1),1,6).enqueue(
+        ProductApi.productApi.getAllProductByTypeWithPaging(getString(R.string.product_type_1), 1, 6).enqueue(
                 new Callback<List<Product>>() {
                     @Override
                     public void onResponse(retrofit2.Call<List<Product>> call, Response<List<Product>> response) {
@@ -224,7 +261,7 @@ public class HomeActivity extends AppCompatActivity {
                     }
                 }
         );
-        ProductApi.productApi.getAllProductByTypeWithPaging(getString(R.string.product_type_2),1,6).enqueue(
+        ProductApi.productApi.getAllProductByTypeWithPaging(getString(R.string.product_type_2), 1, 6).enqueue(
                 new Callback<List<Product>>() {
                     @Override
                     public void onResponse(retrofit2.Call<List<Product>> call, Response<List<Product>> response) {
@@ -238,7 +275,7 @@ public class HomeActivity extends AppCompatActivity {
                     }
                 }
         );
-        ProductApi.productApi.getAllProductByTypeWithPaging(getString(R.string.product_type_3),1,6).enqueue(
+        ProductApi.productApi.getAllProductByTypeWithPaging(getString(R.string.product_type_3), 1, 6).enqueue(
                 new Callback<List<Product>>() {
                     @Override
                     public void onResponse(retrofit2.Call<List<Product>> call, Response<List<Product>> response) {
@@ -254,10 +291,38 @@ public class HomeActivity extends AppCompatActivity {
         );
     }
 
-    public void buildRecycler(ProductAdapter productAdapter, List<Product> products, RecyclerView recyclerView, int id){
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        AccountManager accountManager = CartManagerSingleton.getAccountManagerInstance(this);
+//        accountManager.logOut();
+//    }
+
+    public void buildRecycler(ProductAdapter productAdapter, List<Product> products, RecyclerView recyclerView, int id) {
         productAdapter = new ProductAdapter(products);
         recyclerView = findViewById(id);
         recyclerView.setAdapter(productAdapter);
         recyclerView.setNestedScrollingEnabled(false);
+    }
+
+    private boolean isLogin() {
+        AccountManager accountManager = CartManagerSingleton.getAccountManagerInstance(this);
+        return accountManager.isLogin();
+    }
+
+    private void showErrorNotLogin() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Cãnh báo");
+        builder.setMessage("Bạn cần đăng nhập để thực hiện chức năng này?");
+        builder.setPositiveButton("Đăng nhập", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                startActivityForResult(intent, RequestCode.HOME_LOGIN);
+            }
+        });
+        builder.setNegativeButton("Đóng", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

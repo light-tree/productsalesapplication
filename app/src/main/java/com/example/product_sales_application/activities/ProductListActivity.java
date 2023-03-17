@@ -6,6 +6,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -13,7 +14,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -29,9 +33,13 @@ import com.example.product_sales_application.adapters.OrderDetailAdapter;
 import com.example.product_sales_application.adapters.ProductAdapter;
 import com.example.product_sales_application.adapters.ProductTypeAdapter;
 import com.example.product_sales_application.api.ProductApi;
+import com.example.product_sales_application.common.LastItemGridLayoutManager;
+import com.example.product_sales_application.manager.AccountManager;
+import com.example.product_sales_application.manager.CartManagerSingleton;
 import com.example.product_sales_application.models.Cart;
 import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.models.ProductTypeDomain;
+import com.example.product_sales_application.models.RequestCode;
 import com.google.android.material.navigation.NavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -54,13 +62,12 @@ public class ProductListActivity extends AppCompatActivity {
     private List<Product> productList;
     private ProductTypeAdapter productTypeAdapter;
     private ProductAdapter productAdapter;
-    private Button viewMoreButton;
     private Parcelable recyclerViewState;
 
     private TextView query;
     private TextView type;
 
-    int page = 1, limit = 6;
+    public int page = 1, limit = 6;
 
     public static String textQueryStatic = "";
     public static String textTypeStatic = "";
@@ -69,7 +76,7 @@ public class ProductListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_list);
-        viewMoreButton = findViewById(R.id.view_more_button);
+//        viewMoreButton = findViewById(R.id.view_more_button);
         drawerLayout = findViewById(R.id.drawer_layout_product_list);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);
@@ -81,18 +88,16 @@ public class ProductListActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.login: {
                     drawerLayout.close();
-                    startActivity(new Intent(ProductListActivity.this, LoginActivity.class));
-                    return true;
-                }
-                case R.id.home: {
-                    drawerLayout.close();
-                    startActivity(new Intent(ProductListActivity.this, HomeActivity.class));
-                    finish();
+                    startActivityForResult(new Intent(this, LoginActivity.class), RequestCode.HOME_LOGIN);
                     return true;
                 }
                 case R.id.order_history: {
                     drawerLayout.close();
-                    startActivity((new Intent(ProductListActivity.this, OrderHistoryActivity.class)));
+                    if(!isLogin()){
+                        showErrorNotLogin();
+                        return false;
+                    }
+                    startActivity(new Intent(this, OrderHistoryActivity.class));
                     return true;
                 }
             }
@@ -110,16 +115,8 @@ public class ProductListActivity extends AppCompatActivity {
         productTypeDomainList.add(new ProductTypeDomain(5, getString(R.string.product_type_4), "https://dienmaythudo24h.com/wp-content/uploads/2020/12/may-giat-long-ngang-toshiba-inverter-85kg-twbk95g4vws-wbmlmw.jpg"));
         productTypeDomainList.add(new ProductTypeDomain(6, getString(R.string.product_type_5), "https://blog.dktcdn.net/files/kinh-doanh-hang-gia-dung-1.jpg"));
 
-        GetProductsByType(textQueryStatic, textTypeStatic);
-
-        productTypeAdapter = new ProductTypeAdapter(productTypeDomainList);
-        productTypeView.setAdapter(productTypeAdapter);
-        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        productTypeView.setLayoutManager(horizontalLayoutManager);
-
         query = findViewById(R.id.query);
         type = findViewById(R.id.type);
-
         String textQuery = getIntent().getStringExtra("query");
         if (!TextUtils.isEmpty(textQuery)) {
             textQueryStatic = textQuery;
@@ -131,14 +128,11 @@ public class ProductListActivity extends AppCompatActivity {
             textTypeStatic = textType;
         }
         if (!TextUtils.isEmpty(textType)) type.setText("Loại sản phẩm: " + textTypeStatic);
-
-        viewMoreButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                limit += 6;
-                GetProductsByType(textQueryStatic, textTypeStatic);
-            }
-        });
+        GetProductsByType(textQueryStatic, textTypeStatic);
+        productTypeAdapter = new ProductTypeAdapter(productTypeDomainList);
+        productTypeView.setAdapter(productTypeAdapter);
+        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        productTypeView.setLayoutManager(horizontalLayoutManager);
     }
 
     @Override
@@ -149,12 +143,7 @@ public class ProductListActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                GetProductsByType(query, textQueryStatic);
-//                Intent intent = new Intent(ProductListActivity.this, ProductListActivity.class);
-//                intent.putExtra("query", query);
-//                intent.putExtra("type", ((TextView) findViewById(R.id.type)).getText().toString().substring(15));
-//                startActivity(intent);
-//                finish();
+                GetProductsByType(query, textTypeStatic);
                 return false;
             }
 
@@ -176,11 +165,15 @@ public class ProductListActivity extends AppCompatActivity {
         }
 
         if (id == R.id.scanner) {
+            if(!isLogin()){
+                showErrorNotLogin();
+                return false;
+            }
             scannerCode();
         }
 
         if (id == R.id.cart) {
-            startActivity(new Intent(ProductListActivity.this, CartActivity.class));
+            startActivity(new Intent(this, CartActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
@@ -211,15 +204,25 @@ public class ProductListActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if(requestCode == RequestCode.HOME_LOGIN){
+            if (data.getBooleanExtra("isLogin", false)) {
+                SharedPreferences sharedPref = getSharedPreferences("login_status", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putBoolean("isLoggedIn", true);
+                editor.apply();
+            }
+            return;
+        }
 
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() == null) {
                 Toast.makeText(getBaseContext(), "Canceled", Toast.LENGTH_LONG);
             } else {
                 Intent intent = new Intent(ProductListActivity.this, ProductDetailActivity.class);
                 intent.putExtra("productId", result.getContents());
-                activityResultLauncher.launch(intent);
+                startActivity(intent);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -228,8 +231,10 @@ public class ProductListActivity extends AppCompatActivity {
 
     public void GetProductsByType(String query, String type) {
         textQueryStatic = query;
+        if(textTypeStatic != type) limit = 6;
         textTypeStatic = type;
         if (!TextUtils.isEmpty(textQueryStatic)) this.query.setText("Từ khóa: " + textQueryStatic);
+        if (!TextUtils.isEmpty(textTypeStatic)) this.type.setText("Loại sản phẩm: " + textTypeStatic);
         type = (TextUtils.isEmpty(type) || type.equals("Tất cả")) ? "" : type;
 
             ProductApi.productApi.getAllProductByType(type).enqueue(
@@ -257,7 +262,14 @@ public class ProductListActivity extends AppCompatActivity {
                             if(productAdapter == null){
                                 productAdapter = new ProductAdapter(productList);
                                 productRecycler.setAdapter(productAdapter);
-                                productRecycler.setLayoutManager(new GridLayoutManager(ProductListActivity.this, 2));
+                                productRecycler.setLayoutManager(new LastItemGridLayoutManager(ProductListActivity.this, 2));
+//                                productAdapter.getViewMoreButton().setOnClickListener(new View.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(View v) {
+//                                        limit += 6;
+//                                        GetProductsByType(textQueryStatic, textTypeStatic);
+//                                    }
+//                                });
                             }
                             else{
                                 productAdapter.notifyDataSetChanged();
@@ -271,5 +283,26 @@ public class ProductListActivity extends AppCompatActivity {
                         }
                     }
             );
+    }
+
+    private boolean isLogin() {
+        AccountManager accountManager = CartManagerSingleton.getAccountManagerInstance(this);
+        return accountManager.isLogin();
+    }
+
+    private void showErrorNotLogin() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Cãnh báo");
+        builder.setMessage("Bạn cần đăng nhập để thực hiện chức năng này?");
+        builder.setPositiveButton("Đăng nhập", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(ProductListActivity.this, LoginActivity.class);
+                startActivityForResult(intent, RequestCode.HOME_LOGIN);
+            }
+        });
+        builder.setNegativeButton("Đóng", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

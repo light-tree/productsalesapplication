@@ -6,6 +6,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -13,24 +14,35 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.product_sales_application.R;
 import com.example.product_sales_application.adapters.OrderHistoryAdapter;
-import com.example.product_sales_application.models.Cart;
+import com.example.product_sales_application.api.OrderHistoryApi;
+import com.example.product_sales_application.manager.AccountManager;
+import com.example.product_sales_application.manager.CartManagerSingleton;
 import com.example.product_sales_application.models.Order;
-import com.example.product_sales_application.models.OrderDetail;
-import com.example.product_sales_application.models.Product;
+import com.example.product_sales_application.models.RequestCode;
 import com.google.android.material.navigation.NavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class OrderHistoryActivity extends AppCompatActivity {
 
@@ -40,12 +52,16 @@ public class OrderHistoryActivity extends AppCompatActivity {
     private RecyclerView listOrderHistory;
     private List<Order> listOrderHistoryData;
     private OrderHistoryAdapter orderHistoryAdapter;
+    private EditText edtSearchCusPhone;
+    private Button buttonSearchInvoice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_history);
 
+        edtSearchCusPhone = findViewById(R.id.search_cust_phone);
+        buttonSearchInvoice = findViewById(R.id.button_search_invoice_by_phone);
         drawerLayout = findViewById(R.id.drawer_layout_order);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);
@@ -54,16 +70,19 @@ public class OrderHistoryActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.nav);
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()){
-                case R.id.login:{
+            switch (item.getItemId()) {
+                case R.id.login: {
                     drawerLayout.close();
-                    startActivity(new Intent(OrderHistoryActivity.this, LoginActivity.class));
+                    startActivityForResult(new Intent(OrderHistoryActivity.this, LoginActivity.class), RequestCode.HOME_LOGIN);
                     return true;
                 }
-                case R.id.home:{
+                case R.id.order_history: {
                     drawerLayout.close();
-                    startActivity(new Intent(OrderHistoryActivity.this, HomeActivity.class));
-                    finish();
+                    if (!isLogin()) {
+                        showErrorNotLogin();
+                        return false;
+                    }
+                    startActivity(new Intent(OrderHistoryActivity.this, OrderHistoryActivity.class));
                     return true;
                 }
             }
@@ -75,24 +94,18 @@ public class OrderHistoryActivity extends AppCompatActivity {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         listOrderHistory.setLayoutManager(linearLayoutManager);
 
-        listOrderHistoryData = new ArrayList<Order>() {{
-            add(new Order("0123456789", "Anh A", 1, new Cart(new ArrayList<Product>() {{
-                add(new Product(1, "Iphone10", 100f));
-                add(new Product(2, "Iphone11", 110f));
-                add(new Product(3, "Iphone12", 120f));
-                add(new Product(4, "Iphone13", 130f));
-            }}
-            )));
-            add(new Order("0987654321", "Anh B", 2, new Cart(new ArrayList<Product>() {{
-                add(new Product(1, "Iphone10", 100f));
-                add(new Product(2, "Iphone11", 110f));
-                add(new Product(3, "Iphone12", 120f));
-                add(new Product(4, "Iphone13", 130f));
-            }}
-            )));
-        }};
         orderHistoryAdapter = new OrderHistoryAdapter(listOrderHistoryData);
         listOrderHistory.setAdapter(orderHistoryAdapter);
+
+        buttonSearchInvoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String strSearchvalue = edtSearchCusPhone.getText().toString().trim();
+                getOrderWithPhone(strSearchvalue);
+            }
+        });
+
+        getAllOrderDetail();
     }
 
     @Override
@@ -123,16 +136,20 @@ public class OrderHistoryActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if(toggle.onOptionsItemSelected(item)){
+        if (toggle.onOptionsItemSelected(item)) {
             return true;
         }
 
         if (id == R.id.scanner) {
+            if (!isLogin()) {
+                showErrorNotLogin();
+                return false;
+            }
             scannerCode();
         }
 
         if (id == R.id.cart) {
-
+            startActivity(new Intent(this, CartActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
@@ -164,17 +181,78 @@ public class OrderHistoryActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-
+        super.onActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() == null) {
                 Toast.makeText(getBaseContext(), "Canceled", Toast.LENGTH_LONG);
             } else {
                 Intent intent = new Intent(OrderHistoryActivity.this, ProductDetailActivity.class);
                 intent.putExtra("productId", result.getContents());
-                activityResultLauncher.launch(intent);
+                startActivity(intent);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    private boolean isLogin() {
+        AccountManager accountManager = CartManagerSingleton.getAccountManagerInstance(this);
+        return accountManager.isLogin();
+    }
+
+    private void showErrorNotLogin() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Cãnh báo");
+        builder.setMessage("Bạn cần đăng nhập để thực hiện chức năng này?");
+        builder.setPositiveButton("Đăng nhập", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(OrderHistoryActivity.this, LoginActivity.class);
+                startActivityForResult(intent, RequestCode.HOME_LOGIN);
+            }
+        });
+        builder.setNegativeButton("Đóng", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void getAllOrderDetail() {
+        OrderHistoryApi.orderHistoryApi.getAllOrder().enqueue(
+                new Callback<List<Order>>() {
+                    @Override
+                    public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
+                        listOrderHistoryData = response.body();
+                        orderHistoryAdapter.setOrderList(listOrderHistoryData);
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Order>> call, Throwable t) {
+                        Toast.makeText(OrderHistoryActivity.this, "Lỗi không thể lấy dữ liệu", Toast.LENGTH_LONG);
+                    }
+                }
+        );
+    }
+
+    private void getOrderWithPhone(String phone) {
+        OrderHistoryApi.orderHistoryApi.getAllOrder().enqueue(
+                new Callback<List<Order>>() {
+                    @Override
+                    public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
+                        listOrderHistoryData = response.body();
+                        listOrderHistoryData = listOrderHistoryData
+                                .stream()
+                                .filter(element ->
+                                        element.getCustomerPhone().contains(phone)
+                                )
+                                .collect(Collectors.toList());
+                        orderHistoryAdapter.setOrderList(listOrderHistoryData);
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Order>> call, Throwable t) {
+                        Toast.makeText(OrderHistoryActivity.this, "Lỗi không thể lấy dữ liệu", Toast.LENGTH_LONG);
+                    }
+                }
+        );
     }
 }

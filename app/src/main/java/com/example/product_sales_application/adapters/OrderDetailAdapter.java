@@ -11,41 +11,32 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.product_sales_application.models.Order;
-import com.example.product_sales_application.models.Product;
+import com.example.product_sales_application.models.OrderDetail;
 import com.example.product_sales_application.R;
+import com.example.product_sales_application.models.Product;
 
-public class OrderDetailAdapter  extends RecyclerView.Adapter<OrderDetailAdapter.ViewHolder> {
+import java.util.List;
 
-
+public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View contactView = inflater.inflate(R.layout.view_order_detail, parent, false);
+        View contactView = inflater.inflate(R.layout.view_product_order, parent, false);
 
         ViewHolder viewHolder  = new OrderDetailAdapter.ViewHolder(contactView);
         return viewHolder;
-
-
-
-
     }
 
-
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
-
         public TextView productName;
         public TextView Id;
         public TextView quantity;
         public TextView price;
         public TextView subTotal;
         public ImageView imgProduct;
-
-
-
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -60,22 +51,19 @@ public class OrderDetailAdapter  extends RecyclerView.Adapter<OrderDetailAdapter
         }
     }
 
-    private Order order;
+    private List<OrderDetail> orderDetailList;
 
-    public OrderDetailAdapter(Order order){
-        this.order = order;
+    public OrderDetailAdapter(List<OrderDetail> orderDetailList){
+        this.orderDetailList = orderDetailList;
     }
-
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        Product product = order.getCart().getProducts().get(position);
-        int index =  order.getCart().getProducts().indexOf(product);
+        Product product = orderDetailList.get(position).getProduct();
 
         TextView No = holder.Id;
         No.setText(String.format("Mã Sản Phẩm: %s", product.getId()));
-
 
         TextView productName = holder.productName;
         productName.setText(String.format("%s", product.getName()));
@@ -92,15 +80,15 @@ public class OrderDetailAdapter  extends RecyclerView.Adapter<OrderDetailAdapter
         TextView subTotal = holder.subTotal;
         subTotal.setText(String.format( "Thành tiền: " + "%.2f VND", product.getQuantity() * product.getPrice()) );
 
-
-
-
     }
 
     @Override
     public int getItemCount() {
-        return order.getCart().getProducts().size();
+        return orderDetailList != null ? orderDetailList.size() : 0;
     }
 
-
+    public void setOrderDetailList(List<OrderDetail> list){
+        this.orderDetailList = list;
+        notifyDataSetChanged();
+    }
 }

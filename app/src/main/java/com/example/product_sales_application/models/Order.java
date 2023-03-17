@@ -2,37 +2,40 @@ package com.example.product_sales_application.models;
 
 import com.example.product_sales_application.models.Cart;
 
+import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
-public class Order {
-
+public class Order implements Serializable {
     private int id;
-    private Cart cart;
-    private List<Product> productList;
-    private String numberPhone;
-    private String customerName;
-    private String address;
-    private String orderDate;
-    private String orderSaler;
+    private List<OrderDetail> orderDetailList;
+    private String customerPhone;
+    private String customerFullName;
+    private String customerAddress;
+    private Date orderedDate;
+    private Date requiredDate;
+    private Account staff;
 
-    public String getOrderSaler() {
-        return orderSaler;
+    public Order() {
     }
 
-    public void setOrderSaler(String orderSaler) {
-        this.orderSaler = orderSaler;
-    }
-
-    public Order(int id, Cart cart) {
+    public Order(int id, List<OrderDetail> orderDetailList, String customerPhone, String customerFullName, String customerAddress, Date orderedDate, Date requiredDate, Account staff) {
         this.id = id;
-        this.cart = cart;
+        this.orderDetailList = orderDetailList;
+        this.customerPhone = customerPhone;
+        this.customerFullName = customerFullName;
+        this.customerAddress = customerAddress;
+        this.orderedDate = orderedDate;
+        this.requiredDate = requiredDate;
+        this.staff = staff;
     }
 
-    public Order(String numberPhone, String customerName, int id, Cart cart){
-        this.numberPhone = numberPhone;
-        this.customerName = customerName;
-        this.id = id;
-        this.cart = cart;
+    public List<OrderDetail> getOrderDetailList() {
+        return orderDetailList;
+    }
+
+    public void setOrderDetailList(List<OrderDetail> orderDetailList) {
+        this.orderDetailList = orderDetailList;
     }
 
     public int getId() {
@@ -43,51 +46,51 @@ public class Order {
         this.id = id;
     }
 
-    public Cart getCart() {
-        return cart;
+    public String getCustomerPhone() {
+        return customerPhone;
     }
 
-    public void setCart(Cart cart) {
-        this.cart = cart;
+    public void setCustomerPhone(String customerPhone) {
+        this.customerPhone = customerPhone;
     }
 
-    public List<Product> getProductList() {
-        return productList;
+    public String getCustomerFullName() {
+        return customerFullName;
     }
 
-    public void setProductList(List<Product> productList) {
-        this.productList = productList;
+    public void setCustomerFullName(String customerFullName) {
+        this.customerFullName = customerFullName;
     }
 
-    public String getNumberPhone() {
-        return numberPhone;
+    public String getCustomerAddress() {
+        return customerAddress;
     }
 
-    public void setNumberPhone(String numberPhone) {
-        this.numberPhone = numberPhone;
+    public void setCustomerAddress(String customerAddress) {
+        this.customerAddress = customerAddress;
     }
 
-    public String getCustomerName() {
-        return customerName;
+    public Date getOrderedDate() {
+        return orderedDate;
     }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+    public void setOrderedDate(Date orderedDate) {
+        this.orderedDate = orderedDate;
     }
 
-    public String getAddress() {
-        return address;
+    public Date getRequiredDate() {
+        return requiredDate;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setRequiredDate(Date requiredDate) {
+        this.requiredDate = requiredDate;
     }
 
-    public String getOrderDate() {
-        return orderDate;
+    public Account getStaff() {
+        return staff;
     }
 
-    public void setOrderDate(String orderDate) {
-        this.orderDate = orderDate;
+    public void setStaff(Account staff) {
+        this.staff = staff;
     }
 }
