@@ -27,7 +27,6 @@ import android.widget.Toast;
 
 import com.example.product_sales_application.R;
 import com.example.product_sales_application.adapters.OrderDetailAdapter;
-import com.example.product_sales_application.api.OrderHistoryApi;
 import com.example.product_sales_application.manager.AccountManager;
 import com.example.product_sales_application.manager.CartManagerSingleton;
 import com.example.product_sales_application.models.Order;
@@ -41,10 +40,6 @@ import com.google.zxing.integration.android.IntentResult;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class HistoryDetailActivity extends AppCompatActivity {
 
@@ -132,7 +127,7 @@ public class HistoryDetailActivity extends AppCompatActivity {
         orderDetailList = order.getOrderDetailList();
         orderDetailAdapter.setOrderDetailList(orderDetailList);
         textViewCustomerName.setText("Khách hàng: " + order.getCustomerFullName());
-        textViewCutomerPhone.setText("SĐT khách hàng: " + order.getOrderDetailList());
+        textViewCutomerPhone.setText("SĐT khách hàng: " + order.getCustomerPhone());
         textViewStaffName.setText("Nhân viên: " + order.getStaff().getFullName());
         textViewStaffPhoneNumber.setText("SĐT nhân viên: " + order.getStaff().getPhone());
         textViewCustomerAddr.setText("Địa chỉ khách hàng: " + order.getCustomerAddress());

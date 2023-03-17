@@ -203,6 +203,8 @@ public class ProductListActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if(data == null)
+            return;
 
         if(requestCode == RequestCode.HOME_LOGIN){
             if (data.getBooleanExtra("isLogin", false)) {

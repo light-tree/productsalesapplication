@@ -14,10 +14,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,7 +26,7 @@ import android.widget.Toast;
 
 import com.example.product_sales_application.R;
 import com.example.product_sales_application.adapters.OrderHistoryAdapter;
-import com.example.product_sales_application.api.OrderHistoryApi;
+import com.example.product_sales_application.api.OrderApi;
 import com.example.product_sales_application.manager.AccountManager;
 import com.example.product_sales_application.manager.CartManagerSingleton;
 import com.example.product_sales_application.models.Order;
@@ -217,7 +215,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
     }
 
     private void getAllOrderDetail() {
-        OrderHistoryApi.orderHistoryApi.getAllOrder().enqueue(
+        OrderApi.orderApi.getAllOrderHistory().enqueue(
                 new Callback<List<Order>>() {
                     @Override
                     public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
@@ -234,7 +232,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
     }
 
     private void getOrderWithPhone(String phone) {
-        OrderHistoryApi.orderHistoryApi.getAllOrder().enqueue(
+        OrderApi.orderApi.getAllOrderHistory().enqueue(
                 new Callback<List<Order>>() {
                     @Override
                     public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
