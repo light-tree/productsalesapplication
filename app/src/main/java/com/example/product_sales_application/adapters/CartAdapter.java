@@ -125,7 +125,11 @@ public static class ViewHolder extends RecyclerView.ViewHolder {
             public void onClick(View v) {
               int check = cart.addProductQuantity(index);
                // product.setQuantity(ssl);
-                notifyDataSetChanged();
+                    notifyDataSetChanged();
+                    List<Product> productList = cartManager.getCart();
+                    productList = cart.getProducts();
+                    cartManager.saveCart(productList);
+
             }
         });
 
@@ -134,6 +138,9 @@ public static class ViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
                 int check = cart.subtractProductQuantity(index);
+                List<Product> productList = cartManager.getCart();
+                productList = cart.getProducts();
+                cartManager.saveCart(productList);
 
                 notifyDataSetChanged();
             }

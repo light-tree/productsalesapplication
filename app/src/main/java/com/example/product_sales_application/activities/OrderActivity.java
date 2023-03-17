@@ -25,16 +25,29 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.product_sales_application.api.OrderApi;
 import com.example.product_sales_application.manager.AccountManager;
+import com.example.product_sales_application.manager.CartManager;
 import com.example.product_sales_application.manager.CartManagerSingleton;
 import com.example.product_sales_application.models.Cart;
 import com.example.product_sales_application.models.Order;
 import com.example.product_sales_application.adapters.OrderDetailAdapter;
 import com.example.product_sales_application.R;
+import com.example.product_sales_application.models.OrderDetail;
+import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.models.RequestCode;
 import com.google.android.material.navigation.NavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class OrderActivity extends AppCompatActivity {
 
@@ -46,11 +59,20 @@ public class OrderActivity extends AppCompatActivity {
     private Button btnConfirmCart;
     private  Button btnBack;
     private TextView total;
+    private List<OrderDetail> orderDetailList;
+    Cart cart;
+    private TextView customerName;
+    private TextView customerPhone;
+    private TextView customerAddress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
+
+        customerName = (TextView)findViewById(R.id.ed_customer_fullname);
+        customerPhone = (TextView)findViewById(R.id.ed_customer_phone_number);
+        customerAddress = (TextView)findViewById(R.id.ed_customer_address);
 
         drawerLayout = findViewById(R.id.drawer_layout_order);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
@@ -78,10 +100,12 @@ public class OrderActivity extends AppCompatActivity {
             }
             return true;
         });
+        CartManager cartManager = CartManagerSingleton.getInstance(this);
+        orderDetailList = new ArrayList<>();
+        cart =  new Cart((ArrayList<Product>) cartManager.getCart());
+        getProductFromCart(cart);
 
-        Cart cart =  (Cart)getIntent().getSerializableExtra("cart");
-        Order order = new Order();
-        OrderDetailAdapter orderDetailAdapter = new OrderDetailAdapter(order.getOrderDetailList());
+        OrderDetailAdapter orderDetailAdapter = new OrderDetailAdapter(orderDetailList);
 
         orderDetailCardView = findViewById(R.id.recycler_view_product_order);
         orderDetailCardView.setLayoutManager(new GridLayoutManager(this, 1));
@@ -91,13 +115,22 @@ public class OrderActivity extends AppCompatActivity {
 
         total = (TextView)findViewById(R.id.tv_invoice_total);
 
-//        total.setText(String.format( "Tổng tiền: " + "%.2f VND", order.getTotalPrice()) );
+        total.setText(String.format( "Tổng tiền: " + "%.2f VND", cart.getTotalPrice()) );
 
         btnBack = (Button)findViewById(R.id.btn_cancel);
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed(); // Quay trở lại Activity trước đó
+            }
+        });
+        btnConfirmCart = (Button) findViewById(R.id.btn_confirm_card);
+        btnConfirmCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int id = 0;
+                checkOut(id);
+
             }
         });
     }
@@ -163,7 +196,9 @@ public class OrderActivity extends AppCompatActivity {
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     if (result != null) {
-                        //Làm gì đó khi có response trả về
+                        Intent intent = new Intent(OrderActivity.this, HomeActivity.class);
+
+                        startActivity(intent);
                     } else {
                     }
                 }
@@ -218,5 +253,45 @@ public class OrderActivity extends AppCompatActivity {
         builder.setNegativeButton("Đóng", null);
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    private void getProductFromCart(Cart cart){
+
+        for (Product p: cart.getProducts()) {
+                orderDetailList.add( new OrderDetail(p.getQuantity(), p));
+        }
+    }
+    private void checkOut(int id){
+        Order order = new Order();
+        order.setCustomerAddress(customerAddress.getText().toString());
+        order.setCustomerFullName(customerName.getText().toString());
+        order.setCustomerPhone(customerPhone.getText().toString());
+        Date today = new Date();
+        order.setOrderedDate(today);
+        order.setRequiredDate(today);
+        AccountManager accountManager = CartManagerSingleton.getAccountManagerInstance(this);
+
+        order.setStaff( accountManager.getAccount());
+
+        order.setId(id);
+        order.setOrderDetailList(orderDetailList);
+        order.setStaff(null);
+        OrderApi.orderApi.createOrder(order).enqueue(
+                new Callback<Order>() {
+                    @Override
+                    public void onResponse(retrofit2.Call<Order> call, Response<Order> response) {
+                        Intent intent = new Intent(OrderActivity.this, HomeActivity.class);
+
+
+
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onFailure(Call<Order> call, Throwable t) {
+
+                    }
+                }
+        );
     }
 }
