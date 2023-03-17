@@ -50,12 +50,15 @@ public class CartActivity extends AppCompatActivity {
     private  Button btnConfirmCart;
     private Button btnCancel;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
         btnConfirmCart = (Button)findViewById(R.id.btn_confirm_card);
         btnCancel = (Button)findViewById(R.id.btn_cancel);
+
+
 
         drawerLayout = findViewById(R.id.drawer_layout_cart);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
@@ -103,9 +106,6 @@ public class CartActivity extends AppCompatActivity {
                 if(!productList.isEmpty()){
 
                     Intent intent = new Intent(CartActivity.this, OrderActivity.class);
-
-
-                    intent.putExtra("cart", cart);
                     startActivity(intent);
                 }
                 else{
