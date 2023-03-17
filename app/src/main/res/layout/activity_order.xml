@@ -55,6 +55,12 @@
                 android:hint="Họ và Tên"
                 android:inputType="text"
                 android:textSize="16sp" />
+            <EditText
+                android:id="@+id/ed_required_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Ngày giao hàng"
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/ed_customer_address"
