@@ -39,11 +39,12 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HistoryDetailActivity extends AppCompatActivity {
-
+    public static DecimalFormat formatter = new DecimalFormat("###,###,###");
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
@@ -141,8 +142,16 @@ public class HistoryDetailActivity extends AppCompatActivity {
         orderDetailAdapter.setOrderDetailList(orderDetailList);
         textViewCustomerName.setText("Khách hàng: " + order.getCustomerFullName());
         textViewCutomerPhone.setText("SĐT khách hàng: " + order.getCustomerPhone());
-        textViewStaffName.setText("Nhân viên: " + order.getStaff().getFullName());
-        textViewStaffPhoneNumber.setText("SĐT nhân viên: " + order.getStaff().getPhone());
+
+        if(order.getStaff().getFullName() == null){
+            textViewStaffName.setText("Nhân viên: -");
+            textViewStaffPhoneNumber.setText("SĐT nhân viên: -");
+        }
+        else{
+            textViewStaffName.setText("Nhân viên: " + order.getStaff().getFullName());
+            textViewStaffPhoneNumber.setText("SĐT nhân viên: " + order.getStaff().getPhone());
+        }
+
         textViewCustomerAddr.setText("Địa chỉ khách hàng: " + order.getCustomerAddress());
         textViewOrderDate.setText("Ngày đặt hàng: " + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(order.getOrderedDate()));
         textViewRequireDate.setText("Ngày giao hàng: " + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(order.getRequiredDate()));
@@ -156,8 +165,7 @@ public class HistoryDetailActivity extends AppCompatActivity {
                     totalPrice.set(0, tmp);
                 });
 
-        total.setText(String.format("Tổng tiền: " + "%.2f VND", totalPrice.size() != 0 ? totalPrice.get(0) : 0));
-
+        total.setText("Tổng tiền: " + formatter.format(totalPrice.size() != 0 ? totalPrice.get(0) : 0) + " VNĐ");
     }
 
     @Override

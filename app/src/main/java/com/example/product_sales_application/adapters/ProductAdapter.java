@@ -24,6 +24,7 @@ import com.example.product_sales_application.api.ProductApi;
 import com.example.product_sales_application.models.Product;
 import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
-
+    public static DecimalFormat formatter = new DecimalFormat("###,###,###");
     private Context context;
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView image;
@@ -101,7 +102,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         name.setText(String.format("%s", product.getName()));
 
         TextView price = holder.price;
-        price.setText(String.format("%.0f VND", product.getPrice()));
+        price.setText(formatter.format(product.getPrice())+" VNĐ");
 
         View view = holder.view;
         view.setOnClickListener(new View.OnClickListener() {

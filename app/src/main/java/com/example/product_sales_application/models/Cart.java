@@ -52,7 +52,7 @@ public class Cart implements Serializable {
     }
 
     public double getTotalPrice() {
-        double total = 0.0;
+        double total = 0;
         for (Product p : products) {
             total += p.getPrice() * p.getQuantity();
         }

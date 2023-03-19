@@ -18,10 +18,11 @@ import com.example.product_sales_application.models.Product;
 import com.example.product_sales_application.R;
 import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
-
+    public static DecimalFormat formatter = new DecimalFormat("###,###,###");
 public static class ViewHolder extends RecyclerView.ViewHolder {
 
     public TextView productName;
@@ -87,7 +88,7 @@ public static class ViewHolder extends RecyclerView.ViewHolder {
         productName.setText(String.format("%s", product.getName()));
 
         TextView price = holder.price;
-        price.setText(String.format("Giá: %.2f", product.getPrice()));
+        price.setText("Đơn giá: " + formatter.format(product.getPrice())+" VNĐ");
 
         TextView quantity = holder.quantity;
         quantity.setText(String.format(" %d ", product.getQuantity()));
@@ -97,7 +98,7 @@ public static class ViewHolder extends RecyclerView.ViewHolder {
                 .into(imageView);
 
         TextView total = holder.total;
-        total.setText(String.format( "Thành tiền: " + "%.2f VND", product.getQuantity() * product.getPrice()) );
+        total.setText("Tổng: " + formatter.format(product.getQuantity() * product.getPrice())+" VNĐ");
 
         Button btnDelete = holder.deleteButton;
         btnDelete.setOnClickListener(new View.OnClickListener() {

@@ -41,6 +41,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +51,7 @@ import retrofit2.Response;
 
 public class ProductDetailActivity extends AppCompatActivity {
 
+    public static DecimalFormat formatter = new DecimalFormat("###,###,###");
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
@@ -145,7 +147,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                         Picasso.get().load(product.getUrl())
                                 .into(imageView);
                         tvProductName.setText(product.getName());
-                        tvPrice.setText(String.format("%.0f VND", product.getPrice()));
+                        tvPrice.setText(formatter.format(product.getPrice())+" VNĐ");
                         tvDescription.setText(product.getDescription());
                         if(product.getQuantity() <= 0){
                             outOfStockMessage.setText(OUT_OF_STOCK_MESSAGE);
@@ -299,8 +301,8 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         Picasso.get().load(p.getUrl())
                 .into(imgViewProduct);
-        tvPriceQuantity.setText(String.format("Giá: %.2f", p.getPrice()));
-        tvProductTotalPrice.setText(String.format("Giá: %.2f", p.getPrice() * orderDetail.getQuantity()));
+        tvPriceQuantity.setText("Đơn giá: " + formatter.format(p.getPrice()) + " VNĐ");
+        tvProductTotalPrice.setText("Tổng: " + formatter.format(p.getPrice() * orderDetail.getQuantity()) + " VNĐ");
 
 
 
@@ -384,7 +386,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                         }
 
                         quantity.setText(String.format("%d", orderDetail.getQuantity()));
-                        tvProductTotalPrice.setText(String.format("Giá: %.2f", product.getPrice() * orderDetail.getQuantity()));
+                        tvProductTotalPrice.setText("Tổng: " + formatter.format(product.getPrice() * orderDetail.getQuantity()) + " VNĐ");
                         dialog.hide();
                         alertDialog.show();
 

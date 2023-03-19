@@ -259,26 +259,11 @@ public class OrderActivity extends AppCompatActivity {
         orderDetailCardView.setAdapter(orderDetailAdapter);
         orderDetailCardView.setNestedScrollingEnabled(true);
 
-
-
-
         TextView total = findViewById(R.id.tv_invoice_total);
-
         double totalPrice = cart.getTotalPrice();
-
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
-        decimalFormat.setRoundingMode(RoundingMode.DOWN);
-        String formattedMoney = decimalFormat.format(totalPrice);
-
-        if (formattedMoney.endsWith(".00")) {
-            formattedMoney = formattedMoney.substring(0, formattedMoney.indexOf("."));
-        }
-
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
-        String currency = currencyFormat.format(totalPrice);
-
-
-        total.setText("Thành tiền: " + currency ) ;
+        DecimalFormat formatter = new DecimalFormat("###,###,###");
+        String formattedMoney = formatter.format(totalPrice)+" VNĐ";
+        total.setText("Thành tiền: " + formattedMoney ) ;
 
         btnBack = (Button)findViewById(R.id.btn_cancel);
         btnBack.setOnClickListener(new View.OnClickListener() {

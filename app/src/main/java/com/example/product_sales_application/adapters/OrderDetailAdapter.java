@@ -16,9 +16,11 @@ import com.example.product_sales_application.R;
 import com.example.product_sales_application.models.Product;
 import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.ViewHolder> {
+    public static DecimalFormat formatter = new DecimalFormat("###,###,###");
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -70,7 +72,7 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
         productName.setText(String.format("%s", product.getName()));
 
         TextView price = holder.price;
-        price.setText(String.format("Giá: %.2f", product.getPrice()));
+        price.setText("Đơn giá: " + formatter.format(product.getPrice())+" VNĐ");
 
         TextView quantity = holder.quantity;
         quantity.setText(String.format("Số lượng: %d ", product.getQuantity()));
@@ -80,7 +82,7 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
                 .into(imageView);
 
         TextView subTotal = holder.subTotal;
-        subTotal.setText(String.format( "Thành tiền: " + "%.2f VND", product.getQuantity() * product.getPrice()) );
+        subTotal.setText("Tổng: " + formatter.format(product.getQuantity() * product.getPrice())+" VNĐ");
 
     }
 
