@@ -86,6 +86,12 @@ public class ProductListActivity extends AppCompatActivity {
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
+                case R.id.home:{
+                    drawerLayout.close();
+                    startActivity(new Intent(ProductListActivity.this, HomeActivity.class));
+                    finish();
+                    return true;
+                }
                 case R.id.login: {
                     drawerLayout.close();
                     startActivityForResult(new Intent(this, LoginActivity.class), RequestCode.HOME_LOGIN);

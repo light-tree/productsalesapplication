@@ -106,6 +106,12 @@ public class OrderActivity extends AppCompatActivity {
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
+                case R.id.home:{
+                    drawerLayout.close();
+                    startActivity(new Intent(OrderActivity.this, HomeActivity.class));
+                    finish();
+                    return true;
+                }
                 case R.id.login: {
                     drawerLayout.close();
                     startActivityForResult(new Intent(OrderActivity.this, LoginActivity.class), RequestCode.HOME_LOGIN);
@@ -285,15 +291,9 @@ public class OrderActivity extends AppCompatActivity {
         btnConfirmCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if(isLogin()){
-                    if(checkValidate(requiredDate.getText().toString(), customerName.getText().toString(), customerPhone.getText().toString(), customerAddress.getText().toString())) {
-                       confirmCheckOut();
-                    }
-                } else {
-                    showErrorNotLogin();
+                if(checkValidate(requiredDate.getText().toString(), customerName.getText().toString(), customerPhone.getText().toString(), customerAddress.getText().toString())) {
+                   confirmCheckOut();
                 }
-
             }
         });
         customerPhone.setOnEditorActionListener(new EditText.OnEditorActionListener() {
@@ -513,7 +513,6 @@ public class OrderActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Account account = accountManager.getAccount();
-
                 checkOut(account);
                 Intent intent = new Intent(OrderActivity.this, HomeActivity.class);
                 startActivity(intent);

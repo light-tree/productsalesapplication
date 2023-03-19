@@ -69,6 +69,12 @@ public class CartActivity extends AppCompatActivity {
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
+                case R.id.home:{
+                    drawerLayout.close();
+                    startActivity(new Intent(CartActivity.this, HomeActivity.class));
+                    finish();
+                    return true;
+                }
                 case R.id.login: {
                     drawerLayout.close();
                     startActivityForResult(new Intent(CartActivity.this, LoginActivity.class), RequestCode.HOME_LOGIN);
@@ -104,12 +110,10 @@ public class CartActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(!productList.isEmpty()){
-
                     Intent intent = new Intent(CartActivity.this, OrderActivity.class);
                     startActivity(intent);
                 }
                 else{
-
                     confirmDialog();
                 }
             }

@@ -38,7 +38,7 @@ public interface OrderApi {
     Call<List<Order>> getAllOrderHistory();
 
     @GET("order")
-    Call<List<Order>> getAllOrderByPhone(@Query("phone") String phone,
+    Call<List<Order>> getAllOrderByPhone(@Query("customerPhone") String phone,
                                          @Query("sortBy") String fieldOrder,
                                          @Query("order") String typeOrder);
 }

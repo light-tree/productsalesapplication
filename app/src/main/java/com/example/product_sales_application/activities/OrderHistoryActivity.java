@@ -75,13 +75,10 @@ public class OrderHistoryActivity extends AppCompatActivity {
                     startActivityForResult(new Intent(OrderHistoryActivity.this, LoginActivity.class), RequestCode.HOME_LOGIN);
                     return true;
                 }
-                case R.id.order_history: {
+                case R.id.home:{
                     drawerLayout.close();
-                    if (!isLogin()) {
-                        showErrorNotLogin();
-                        return false;
-                    }
-                    startActivity(new Intent(OrderHistoryActivity.this, OrderHistoryActivity.class));
+                    startActivity(new Intent(OrderHistoryActivity.this, HomeActivity.class));
+                    finish();
                     return true;
                 }
             }

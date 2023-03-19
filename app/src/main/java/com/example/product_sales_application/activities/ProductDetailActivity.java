@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.hardware.display.DeviceProductInfo;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -71,6 +72,8 @@ public class ProductDetailActivity extends AppCompatActivity {
     private TextView tvProductTotalPrice;
     private TextView tvErrorQuantity;
 
+    private TextView outOfStockMessage;
+    private static String OUT_OF_STOCK_MESSAGE = "Sản phẩm này hiện đã hết hàng.";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +86,15 @@ public class ProductDetailActivity extends AppCompatActivity {
         tvPrice = findViewById(R.id.price);
         tvDescription = findViewById(R.id.description);
         imageView = findViewById(R.id.image);
+        outOfStockMessage = findViewById(R.id.out_of_stock_message);
+        buttonBack = findViewById(R.id.button_back);
+        buttonAdd = findViewById(R.id.button_add);
+        buttonBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         int id = Integer.parseInt(getIntent().getStringExtra("productId"));
         getProductById(id);
@@ -96,6 +108,12 @@ public class ProductDetailActivity extends AppCompatActivity {
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
+                case R.id.home:{
+                    drawerLayout.close();
+                    startActivity(new Intent(ProductDetailActivity.this, HomeActivity.class));
+                    finish();
+                    return true;
+                }
                 case R.id.login: {
                     drawerLayout.close();
                     startActivityForResult(new Intent(ProductDetailActivity.this, LoginActivity.class), RequestCode.HOME_LOGIN);
@@ -113,27 +131,10 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
             return true;
         });
-
-        buttonBack = findViewById(R.id.button_back);
-        buttonAdd = findViewById(R.id.button_add);
-
-        buttonBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        buttonAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                initPopupChooseQuantity(product);
-            }
-        });
     }
 
     private void getProductById(int productId) {
-        dialog.setMessage("Đang tìm kiếm đơn hàng.");
+        dialog.setMessage("Đang tìm kiếm sản phẩm.");
         dialog.show();
 
         ProductApi.productApi.getProductById(productId).enqueue(
@@ -146,9 +147,22 @@ public class ProductDetailActivity extends AppCompatActivity {
                         tvProductName.setText(product.getName());
                         tvPrice.setText(String.format("%.0f VND", product.getPrice()));
                         tvDescription.setText(product.getDescription());
-                        orderDetail = new OrderDetail();
-                        orderDetail.setProduct(product);
-                        orderDetail.setQuantity(1);
+                        if(product.getQuantity() <= 0){
+                            outOfStockMessage.setText(OUT_OF_STOCK_MESSAGE);
+                            outOfStockMessage.setTextColor(Color.RED);
+                            buttonAdd.setEnabled(false);
+                        }
+                        else{
+                            orderDetail = new OrderDetail();
+                            orderDetail.setProduct(product);
+                            orderDetail.setQuantity(1);
+                            buttonAdd.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                initPopupChooseQuantity(product);
+                            }
+                        });
+                        }
                         dialog.hide();
                     }
 

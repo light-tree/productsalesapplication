@@ -84,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
                         if(list.size() == 1){
                             AccountManager accountManager = CartManagerSingleton.getAccountManagerInstance(LoginActivity.this);
                             accountManager.login();
+                            accountManager.saveAccount(list.get(0));
                             finish();
                             return;
                         }
