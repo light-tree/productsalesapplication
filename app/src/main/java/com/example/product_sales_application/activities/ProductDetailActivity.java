@@ -73,6 +73,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private TextView tvPriceQuantity;
     private TextView tvProductTotalPrice;
     private TextView tvErrorQuantity;
+    private AccountManager accountManager;
 
     private TextView outOfStockMessage;
     private static String OUT_OF_STOCK_MESSAGE = "Sản phẩm này hiện đã hết hàng.";
@@ -82,6 +83,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         dialog = new ProgressDialog(this);
         dialog.setCancelable(false);
         dialog.setInverseBackgroundForced(true);
+        accountManager = CartManagerSingleton.getAccountManagerInstance(this);
 
         setContentView(R.layout.activity_product_detail);
         tvProductName = findViewById(R.id.name);
@@ -107,6 +109,11 @@ public class ProductDetailActivity extends AppCompatActivity {
         toggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         navigationView = findViewById(R.id.nav);
+        if (isLogin()) {
+            navigationView.getMenu().findItem(R.id.login).setTitle("Đăng xuất");
+        } else {
+            navigationView.getMenu().findItem(R.id.login).setTitle("Đăng nhập");
+        }
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -117,6 +124,13 @@ public class ProductDetailActivity extends AppCompatActivity {
                     return true;
                 }
                 case R.id.login: {
+                    if (isLogin()) {
+                        accountManager.logOut();
+                        navigationView.getMenu().findItem(R.id.login).setTitle("Đăng nhập");
+                        drawerLayout.close();
+                        Toast.makeText(this, "Đăng xuất thành công.", Toast.LENGTH_LONG);
+                        return true;
+                    }
                     drawerLayout.close();
                     startActivityForResult(new Intent(ProductDetailActivity.this, LoginActivity.class), RequestCode.HOME_LOGIN);
                     return true;

@@ -62,11 +62,14 @@ public class HistoryDetailActivity extends AppCompatActivity {
             textViewRequireDate;
     private Order order;
 
+    private AccountManager accountManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history_detail);
+        accountManager = CartManagerSingleton.getAccountManagerInstance(this);
         ProgressDialog dialog = new ProgressDialog(this);
         dialog.setMessage("Đang tải...");
         dialog.setCancelable(false);
@@ -93,10 +96,22 @@ public class HistoryDetailActivity extends AppCompatActivity {
         toggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         navigationView = findViewById(R.id.nav);
+        if (isLogin()) {
+            navigationView.getMenu().findItem(R.id.login).setTitle("Đăng xuất");
+        } else {
+            navigationView.getMenu().findItem(R.id.login).setTitle("Đăng nhập");
+        }
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.home:{
+                    if (isLogin()) {
+                        accountManager.logOut();
+                        navigationView.getMenu().findItem(R.id.login).setTitle("Đăng nhập");
+                        drawerLayout.close();
+                        Toast.makeText(this, "Đăng xuất thành công.", Toast.LENGTH_LONG);
+                        return true;
+                    }
                     drawerLayout.close();
                     startActivity(new Intent(HistoryDetailActivity.this, HomeActivity.class));
                     finish();
