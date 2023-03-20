@@ -2,10 +2,13 @@ package com.example.product_sales_application.api;
 import retrofit2.Call;
 import  retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
+import com.example.product_sales_application.models.Order;
 import com.example.product_sales_application.models.Product;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -49,4 +52,7 @@ public interface ProductApi {
     Call<List<Product>> getAllProductWithPaging(
             @Query("page") int page,
             @Query("limit") int limit );
+
+    @PUT("product/{id}")
+    Call<Product> updateProduct(@Path("id") int id, @Body Product data);
 }

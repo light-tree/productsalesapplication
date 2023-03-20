@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.text.Editable;
@@ -35,6 +36,7 @@ import android.widget.Toast;
 
 import com.example.product_sales_application.MainActivity;
 import com.example.product_sales_application.api.OrderApi;
+import com.example.product_sales_application.api.ProductApi;
 import com.example.product_sales_application.manager.AccountManager;
 import com.example.product_sales_application.manager.CartManager;
 import com.example.product_sales_application.manager.CartManagerSingleton;
@@ -49,6 +51,7 @@ import com.example.product_sales_application.models.RequestCode;
 import com.google.android.material.navigation.NavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.squareup.picasso.Picasso;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -476,6 +479,33 @@ public class OrderActivity extends AppCompatActivity {
                 new Callback<Order>() {
                     @Override
                     public void onResponse(retrofit2.Call<Order> call, Response<Order> response) {
+                        for (OrderDetail orderDetail : orderDetailList) {
+                            ProductApi.productApi.getProductById(orderDetail.getProduct().getId()).enqueue(
+                                    new Callback<Product>() {
+                                        @Override
+                                        public void onResponse(retrofit2.Call<Product> call, Response<Product> response) {
+                                            Product productOnDatabase = response.body();
+                                            productOnDatabase.setQuantity(productOnDatabase.getQuantity() - orderDetail.getProduct().getQuantity());
+                                            ProductApi.productApi.updateProduct(productOnDatabase.getId(), productOnDatabase).enqueue( new Callback<Product>() {
+                                                @Override
+                                                public void onResponse(retrofit2.Call<Product> call, Response<Product> response) {
+
+                                                }
+
+                                                @Override
+                                                public void onFailure(Call<Product> call, Throwable t) {
+
+                                                }
+                                            });
+                                        }
+                                        @Override
+                                        public void onFailure(Call<Product> call, Throwable t) {
+
+                                        }
+                                    }
+                            );
+                        }
+
                         editor.clear(); // xóa toàn bộ dữ liệu SharedPreferences
                         editor.apply(); // lưu thay đổi vào SharedPreferences
 

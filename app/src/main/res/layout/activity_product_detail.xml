@@ -79,7 +79,52 @@
                             android:text="Dòng sản phẩm cao cấp\nDòng sản phẩm cao cấp\nDòng sản phẩm cao cấp\nDòng sản phẩm cao cấp\nDòng sản phẩm cao cấp\nDòng sản phẩm cao cấp\nDòng sản phẩm cao cấp"
                         android:textSize="20dp"
                         />
+
+
                 </LinearLayout>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="75dp">
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/product_list_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="15dp"
+                        android:paddingTop="22dp"
+                        android:paddingBottom="45dp"
+                        android:background="@color/primary_inside_app"
+                        android:orientation="horizontal"
+                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:paddingStart="5dp"
+                        android:text="Sản phẩm tương tự"
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/product_list_1" />
+
+                    <Button
+                        android:id="@+id/button_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:backgroundTint="@color/white"
+                        android:shadowRadius="@integer/material_motion_duration_short_2"
+                        android:text="@string/more"
+                        android:textColor="@color/primary_outside_app"
+                        app:layout_constraintBottom_toBottomOf="@+id/product_list_1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
 
         </ScrollView>

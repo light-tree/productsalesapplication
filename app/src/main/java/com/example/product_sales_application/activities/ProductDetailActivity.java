@@ -6,6 +6,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -28,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.product_sales_application.R;
+import com.example.product_sales_application.adapters.ProductAdapter;
 import com.example.product_sales_application.api.ProductApi;
 import com.example.product_sales_application.manager.AccountManager;
 import com.example.product_sales_application.manager.CartManager;
@@ -44,6 +46,7 @@ import com.squareup.picasso.Picasso;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -74,6 +77,11 @@ public class ProductDetailActivity extends AppCompatActivity {
     private TextView tvProductTotalPrice;
     private TextView tvErrorQuantity;
 
+    private ProductAdapter productAdapter1;
+    private RecyclerView productListRecyclerView1;
+    private Button button1;
+    private List<Product> products1;
+
     private TextView outOfStockMessage;
     private static String OUT_OF_STOCK_MESSAGE = "Sản phẩm này hiện đã hết hàng.";
     @Override
@@ -100,6 +108,9 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         int id = Integer.parseInt(getIntent().getStringExtra("productId"));
         getProductById(id);
+
+        button1 = findViewById(R.id.button_1);
+
 
         drawerLayout = findViewById(R.id.drawer_layout_product_detail);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
@@ -166,6 +177,38 @@ public class ProductDetailActivity extends AppCompatActivity {
                         });
                         }
                         dialog.hide();
+
+                        Intent intent = new Intent(ProductDetailActivity.this, ProductListActivity.class);
+                        button1.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                intent.putExtra("query", "");
+                                intent.putExtra("type", product.getProductTypeId());
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+
+                        ProductApi.productApi.getAllProductByTypeWithPaging(product.getProductTypeId(), 1, 7).enqueue(
+                                new Callback<List<Product>>() {
+                                    @Override
+                                    public void onResponse(retrofit2.Call<List<Product>> call, Response<List<Product>> response) {
+                                        products1 = response.body();
+
+                                        products1 = products1.stream().filter(p -> p.getId() != product.getId()).limit(6).collect(Collectors.toList());
+
+                                        productAdapter1 = new ProductAdapter(products1);
+                                        productListRecyclerView1 = findViewById(R.id.product_list_1);
+                                        productListRecyclerView1.setAdapter(productAdapter1);
+                                        productListRecyclerView1.setNestedScrollingEnabled(false);
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<List<Product>> call, Throwable t) {
+                                        products1 = new ArrayList<>();
+                                    }
+                                }
+                        );
                     }
 
                     @Override
