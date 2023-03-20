@@ -134,12 +134,13 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:orientation="horizontal"
+            android:paddingBottom="10dp"
+            android:backgroundTint="@color/white"
             android:weightSum="2">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="10dp"
                 android:layout_weight="1">
 
                 <Button
@@ -156,7 +157,6 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="10dp"
                 android:layout_weight="1">
 
                 <Button

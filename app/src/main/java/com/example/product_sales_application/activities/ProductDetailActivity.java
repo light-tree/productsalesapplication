@@ -140,6 +140,8 @@ public class ProductDetailActivity extends AppCompatActivity {
                         navigationView.getMenu().findItem(R.id.login).setTitle("Đăng nhập");
                         drawerLayout.close();
                         Toast.makeText(this, "Đăng xuất thành công.", Toast.LENGTH_LONG);
+                        setResult(RESULT_CANCELED);
+                        finish();
                         return true;
                     }
                     drawerLayout.close();

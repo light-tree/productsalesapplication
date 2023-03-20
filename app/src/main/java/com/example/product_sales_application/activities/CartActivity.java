@@ -89,6 +89,8 @@ public class CartActivity extends AppCompatActivity {
                         navigationView.getMenu().findItem(R.id.login).setTitle("Đăng nhập");
                         drawerLayout.close();
                         Toast.makeText(this, "Đăng xuất thành công.", Toast.LENGTH_LONG);
+                        setResult(RESULT_CANCELED);
+                        finish();
                         return true;
                     }
                     drawerLayout.close();
@@ -179,10 +181,6 @@ public class CartActivity extends AppCompatActivity {
             }
             scannerCode();
         }
-
-        if (id == R.id.cart) {
-            startActivity(new Intent(this, CartActivity.class));
-        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -211,6 +209,10 @@ public class CartActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == RESULT_CANCELED){
+            finish();
+        }
 
         if(requestCode == RequestCode.CART_LOGIN){
             if(resultCode == RESULT_OK){

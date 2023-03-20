@@ -126,6 +126,8 @@ public class OrderActivity extends AppCompatActivity {
                         navigationView.getMenu().findItem(R.id.login).setTitle("Đăng nhập");
                         drawerLayout.close();
                         Toast.makeText(this, "Đăng xuất thành công.", Toast.LENGTH_LONG);
+                        setResult(RESULT_CANCELED);
+                        finish();
                         return true;
                     }
                     drawerLayout.close();
@@ -317,6 +319,7 @@ public class OrderActivity extends AppCompatActivity {
 
                         if(list.size() == 0){
                             Toast.makeText(OrderActivity.this, "Số điện thoại không có trong hệ thống.", Toast.LENGTH_LONG).show();
+                            dialog.hide();
                             return;
                         }
 
@@ -407,6 +410,10 @@ public class OrderActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == RESULT_CANCELED){
+            finish();
+        }
 
         if(requestCode == RequestCode.ORDER_LOGIN){
             if(resultCode == RESULT_OK){
