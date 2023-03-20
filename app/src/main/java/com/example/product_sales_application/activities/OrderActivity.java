@@ -148,7 +148,7 @@ public class OrderActivity extends AppCompatActivity {
 
                             @Override
                             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                                dayOfMonth += 1;
+
                                 month += 1;
                                 String dayOfMonthStr = dayOfMonth < 10 ? "0" + dayOfMonth : String.valueOf(dayOfMonth);
                                 String monthStr = month < 10 ? "0" + month : String.valueOf(month);
@@ -168,23 +168,6 @@ public class OrderActivity extends AppCompatActivity {
                 datePickerDialog.getDatePicker().setMinDate(minDateCalendar.getTimeInMillis());
                 datePickerDialog.getDatePicker().setMaxDate(maxDateCalendar.getTimeInMillis());
                 datePickerDialog.show();
-            }
-        });
-        requiredDate.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Không cần xử lý gì ở đây
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String userInput = s.toString();
-                isDateValid(userInput);
             }
         });
 

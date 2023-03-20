@@ -60,7 +60,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Ngày giao hàng"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:editable="false"
+                />
 
             <EditText
                 android:id="@+id/ed_customer_address"
