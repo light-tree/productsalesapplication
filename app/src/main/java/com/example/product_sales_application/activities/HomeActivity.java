@@ -232,6 +232,7 @@ public class HomeActivity extends AppCompatActivity {
         if(requestCode == RequestCode.HOME_LOGIN){
             if(resultCode == RESULT_OK){
                 navigationView.getMenu().findItem(R.id.login).setTitle("Đăng xuất");
+                return;
             }
         }
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);

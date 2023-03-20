@@ -84,10 +84,11 @@ public class OrderHistoryActivity extends AppCompatActivity {
                         navigationView.getMenu().findItem(R.id.login).setTitle("Đăng nhập");
                         drawerLayout.close();
                         Toast.makeText(this, "Đăng xuất thành công.", Toast.LENGTH_LONG);
+                        finish();
                         return true;
                     }
                     drawerLayout.close();
-                    startActivityForResult(new Intent(OrderHistoryActivity.this, LoginActivity.class), RequestCode.HOME_LOGIN);
+                    startActivityForResult(new Intent(OrderHistoryActivity.this, LoginActivity.class), RequestCode.ORDER_HISTORY_LOGIN);
                     return true;
                 }
                 case R.id.home:{
@@ -190,6 +191,18 @@ public class OrderHistoryActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == RESULT_CANCELED){
+            finish();
+        }
+
+        if(requestCode == RequestCode.ORDER_HISTORY_LOGIN){
+            if(resultCode == RESULT_OK){
+                navigationView.getMenu().findItem(R.id.login).setTitle("Đăng xuất");
+            }
+            return;
+        }
+
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
         if (result != null) {

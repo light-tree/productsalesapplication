@@ -140,10 +140,12 @@ public class ProductDetailActivity extends AppCompatActivity {
                         navigationView.getMenu().findItem(R.id.login).setTitle("Đăng nhập");
                         drawerLayout.close();
                         Toast.makeText(this, "Đăng xuất thành công.", Toast.LENGTH_LONG);
+                        setResult(RESULT_CANCELED);
+                        finish();
                         return true;
                     }
                     drawerLayout.close();
-                    startActivityForResult(new Intent(ProductDetailActivity.this, LoginActivity.class), RequestCode.HOME_LOGIN);
+                    startActivityForResult(new Intent(ProductDetailActivity.this, LoginActivity.class), RequestCode.PRODUCT_DETAIL_LOGIN);
                     return true;
                 }
                 case R.id.order_history: {
@@ -239,8 +241,11 @@ public class ProductDetailActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK){
-            navigationView.getMenu().findItem(R.id.login).setTitle("Đăng xuất");
+        if(requestCode == RequestCode.PRODUCT_DETAIL_LOGIN){
+            if(resultCode == RESULT_OK){
+                navigationView.getMenu().findItem(R.id.login).setTitle("Đăng xuất");
+                return;
+            }
         }
 
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);

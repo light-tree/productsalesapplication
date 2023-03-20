@@ -89,10 +89,12 @@ public class CartActivity extends AppCompatActivity {
                         navigationView.getMenu().findItem(R.id.login).setTitle("Đăng nhập");
                         drawerLayout.close();
                         Toast.makeText(this, "Đăng xuất thành công.", Toast.LENGTH_LONG);
+                        setResult(RESULT_CANCELED);
+                        finish();
                         return true;
                     }
                     drawerLayout.close();
-                    startActivityForResult(new Intent(CartActivity.this, LoginActivity.class), RequestCode.HOME_LOGIN);
+                    startActivityForResult(new Intent(CartActivity.this, LoginActivity.class), RequestCode.CART_LOGIN);
                     return true;
                 }
                 case R.id.order_history: {
@@ -179,10 +181,6 @@ public class CartActivity extends AppCompatActivity {
             }
             scannerCode();
         }
-
-        if (id == R.id.cart) {
-            startActivity(new Intent(this, CartActivity.class));
-        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -212,12 +210,13 @@ public class CartActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == RequestCode.HOME_LOGIN){
-            if (data.getBooleanExtra("isLogin", false)) {
-                SharedPreferences sharedPref = getSharedPreferences("login_status", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putBoolean("isLoggedIn", true);
-                editor.apply();
+        if(resultCode == RESULT_CANCELED){
+            finish();
+        }
+
+        if(requestCode == RequestCode.CART_LOGIN){
+            if(resultCode == RESULT_OK){
+                navigationView.getMenu().findItem(R.id.login).setTitle("Đăng xuất");
             }
             return;
         }
