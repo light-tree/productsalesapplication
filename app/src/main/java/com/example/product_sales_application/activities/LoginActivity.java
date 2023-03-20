@@ -119,6 +119,7 @@ public class LoginActivity extends AppCompatActivity {
             if(resultCode == RESULT_OK){
                 AccountManager accountManager = CartManagerSingleton.getAccountManagerInstance(this);
                 accountManager.login();
+                setResult(RESULT_OK);
                 finish();
             } else if(resultCode == RESULT_CANCELED){
 

@@ -107,7 +107,7 @@ public class ProductListActivity extends AppCompatActivity {
                         return true;
                     }
                     drawerLayout.close();
-                    startActivityForResult(new Intent(this, LoginActivity.class), RequestCode.HOME_LOGIN);
+                    startActivityForResult(new Intent(this, LoginActivity.class), RequestCode.PRODUCT_LIST_LOGIN);
                     return true;
                 }
                 case R.id.order_history: {
@@ -225,7 +225,7 @@ public class ProductListActivity extends AppCompatActivity {
         if(data == null)
             return;
 
-        if(requestCode == RequestCode.HOME_LOGIN){
+        if(requestCode == RequestCode.PRODUCT_LIST_LOGIN){
             if (data.getBooleanExtra("isLogin", false)) {
                 SharedPreferences sharedPref = getSharedPreferences("login_status", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();

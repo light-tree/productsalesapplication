@@ -129,7 +129,7 @@ public class OrderActivity extends AppCompatActivity {
                         return true;
                     }
                     drawerLayout.close();
-                    startActivityForResult(new Intent(OrderActivity.this, LoginActivity.class), RequestCode.HOME_LOGIN);
+                    startActivityForResult(new Intent(OrderActivity.this, LoginActivity.class), RequestCode.ORDER_LOGIN);
                     return true;
                 }
                 case R.id.order_history: {
@@ -408,12 +408,9 @@ public class OrderActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == RequestCode.HOME_LOGIN){
-            if (data.getBooleanExtra("isLogin", false)) {
-                SharedPreferences sharedPref = getSharedPreferences("login_status", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putBoolean("isLoggedIn", true);
-                editor.apply();
+        if(requestCode == RequestCode.ORDER_LOGIN){
+            if(resultCode == RESULT_OK){
+                navigationView.getMenu().findItem(R.id.login).setTitle("Đăng xuất");
             }
             return;
         }

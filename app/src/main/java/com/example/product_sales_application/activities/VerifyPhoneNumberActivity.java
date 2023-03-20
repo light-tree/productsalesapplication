@@ -49,6 +49,7 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity {
     private Button btnVerifyPhone;
     private EditText edtOTP;
     private Button btnSendOTP;
+    private Button btnBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +96,14 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity {
                 }
             }
         });
+
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setResult(RESULT_CANCELED);
+                finish();
+            }
+        });
     }
 
     private void initUI() {
@@ -102,6 +111,7 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity {
         btnVerifyPhone = findViewById(R.id.btn_verify_phone_number);
         edtOTP = findViewById(R.id.edit_text_otp);
         btnSendOTP = findViewById(R.id.btn_enter_otp);
+        btnBack = findViewById(R.id.btn_back);
     }
 
     private void checkAccountUsingPhone(String phone) {
