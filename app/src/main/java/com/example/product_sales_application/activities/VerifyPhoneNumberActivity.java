@@ -117,7 +117,7 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity {
                         AccountManager accountManager = CartManagerSingleton.getAccountManagerInstance(VerifyPhoneNumberActivity.this);
                         accountManager.saveAccount(list.get(0));
                         String strPhone = "+84" + phone.substring(1);
-                        sendVerificationCode(phone);
+                        sendVerificationCode(strPhone);
                     }
 
                     @Override

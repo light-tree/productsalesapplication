@@ -239,15 +239,8 @@ public class ProductDetailActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RequestCode.HOME_LOGIN) {
-            if (data.getBooleanExtra("isLogin", false)) {
-                SharedPreferences sharedPref = getSharedPreferences("login_status", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putBoolean("isLoggedIn", true);
-                editor.apply();
-            }
-            return;
+        if(resultCode == RESULT_OK){
+            navigationView.getMenu().findItem(R.id.login).setTitle("Đăng xuất");
         }
 
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
@@ -327,7 +320,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private void showErrorNotLogin() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Cãnh báo");
+        builder.setTitle("Cảnh báo");
         builder.setMessage("Bạn cần đăng nhập để thực hiện chức năng này?");
         builder.setPositiveButton("Đăng nhập", new DialogInterface.OnClickListener() {
             @Override

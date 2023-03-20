@@ -540,39 +540,7 @@ public class OrderActivity extends AppCompatActivity {
         return check;
     }
 
-    private boolean isDateValid(String date) {
-        boolean check = true;
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        Calendar currentDate = Calendar.getInstance();
-        currentDate.setTime(new Date());
 
-        Calendar maxDate = Calendar.getInstance();
-        currentDate.setTime(new Date());
-
-        maxDate.add(Calendar.DATE, 7); // Tối đã là 7 ngày kể từ ngày hôm nay
-
-
-        try {
-            Date selectedDate = sdf.parse(date);
-            Calendar selectedDateCal = Calendar.getInstance();
-            selectedDateCal.setTime(selectedDate);
-
-            if (selectedDateCal.compareTo(currentDate) < 0 || selectedDateCal.compareTo(maxDate) > 0) {
-                requiredDate.setError("Vui lòng nhập ngày giao hàng hợp lệ, trong vòng 7 ngày kể từ ngày hôm nay");
-                check = false;
-
-            } else {
-               check = true;
-            }
-
-        } catch (ParseException e) {
-            // Ngày đã nhập không đúng định dạng
-            check = false;
-            requiredDate.setError("Vui lòng nhập ngày giao hàng hợp lệ, trong vòng 7 ngày kể từ ngày hôm nay");
-        }
-        return check;
-
-    }
     private boolean isPhoneValid(String phone) {
         String regex = "0[0-9]{9,10}";
         boolean check = true;
@@ -608,7 +576,7 @@ public class OrderActivity extends AppCompatActivity {
     }
 
     private boolean checkValidate(String date, String fullName, String phone, String address){
-        return ( isFullNameValid(fullName) &&  isPhoneValid(phone) && isDateValid(date)  &&  isAddressValid(address) );
+        return ( isFullNameValid(fullName) &&  isPhoneValid(phone) &&  isAddressValid(address) );
     }
 
     private Date convertStringToDate(String input){

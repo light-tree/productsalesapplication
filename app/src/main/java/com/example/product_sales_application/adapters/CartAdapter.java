@@ -177,7 +177,7 @@ public static class ViewHolder extends RecyclerView.ViewHolder {
                     public void onResponse(Call<Product> call, Response<Product> response) {
                         Product currentProduct = response.body();
                         if(currentProduct.getQuantity()< product.getQuantity()){
-                            showErrorMessage("Số lượng còn lại không đủ", context);
+                            showErrorMessage("Số lượng đã tối đa", context);
                             dialog.hide();
                         } else {
                             List<Product> productList = cartManager.getCart();

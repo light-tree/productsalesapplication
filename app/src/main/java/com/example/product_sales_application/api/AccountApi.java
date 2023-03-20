@@ -29,7 +29,7 @@ public interface AccountApi {
                                    @Query("password") String password);
 
     @GET("account")
-    Call<List<Account>> getAccountByPhone(@Query("username") String phone);
+    Call<List<Account>> getAccountByPhone(@Query("phone") String phone);
 
 
 }
