@@ -50,6 +50,8 @@ public class CartActivity extends AppCompatActivity {
     private  Button btnConfirmCart;
     private Button btnCancel;
 
+    private AccountManager accountManager;
+
 
 
     @Override
@@ -58,7 +60,7 @@ public class CartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_cart);
         btnConfirmCart = (Button)findViewById(R.id.btn_confirm_card);
         btnCancel = (Button)findViewById(R.id.btn_cancel);
-
+        accountManager = CartManagerSingleton.getAccountManagerInstance(this);
 
 
         drawerLayout = findViewById(R.id.drawer_layout_cart);
@@ -67,6 +69,11 @@ public class CartActivity extends AppCompatActivity {
         toggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         navigationView = findViewById(R.id.nav);
+        if (isLogin()) {
+            navigationView.getMenu().findItem(R.id.login).setTitle("Đăng xuất");
+        } else {
+            navigationView.getMenu().findItem(R.id.login).setTitle("Đăng nhập");
+        }
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -77,6 +84,13 @@ public class CartActivity extends AppCompatActivity {
                     return true;
                 }
                 case R.id.login: {
+                    if (isLogin()) {
+                        accountManager.logOut();
+                        navigationView.getMenu().findItem(R.id.login).setTitle("Đăng nhập");
+                        drawerLayout.close();
+                        Toast.makeText(this, "Đăng xuất thành công.", Toast.LENGTH_LONG);
+                        return true;
+                    }
                     drawerLayout.close();
                     startActivityForResult(new Intent(CartActivity.this, LoginActivity.class), RequestCode.HOME_LOGIN);
                     return true;
@@ -104,8 +118,6 @@ public class CartActivity extends AppCompatActivity {
         cartListView.setLayoutManager(new GridLayoutManager(this, 1));
         cartListView.setAdapter(cartAdapter);
         cartListView.setNestedScrollingEnabled(true);
-
-
 
         btnConfirmCart.setOnClickListener(new View.OnClickListener() {
             @Override

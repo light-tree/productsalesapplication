@@ -106,6 +106,11 @@ public class OrderActivity extends AppCompatActivity {
         toggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         navigationView = findViewById(R.id.nav);
+        if (isLogin()) {
+            navigationView.getMenu().findItem(R.id.login).setTitle("Đăng xuất");
+        } else {
+            navigationView.getMenu().findItem(R.id.login).setTitle("Đăng nhập");
+        }
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -116,6 +121,13 @@ public class OrderActivity extends AppCompatActivity {
                     return true;
                 }
                 case R.id.login: {
+                    if (isLogin()) {
+                        accountManager.logOut();
+                        navigationView.getMenu().findItem(R.id.login).setTitle("Đăng nhập");
+                        drawerLayout.close();
+                        Toast.makeText(this, "Đăng xuất thành công.", Toast.LENGTH_LONG);
+                        return true;
+                    }
                     drawerLayout.close();
                     startActivityForResult(new Intent(OrderActivity.this, LoginActivity.class), RequestCode.HOME_LOGIN);
                     return true;
@@ -297,7 +309,7 @@ public class OrderActivity extends AppCompatActivity {
         dialog.setInverseBackgroundForced(false);
         dialog.show();
 
-        OrderApi.orderApi.getAllOrderByPhone(strCustomerPhone, "id", "desc").enqueue(
+        OrderApi.orderApi.getLimitOrderByPhone(strCustomerPhone, "id", "desc" ,1).enqueue(
                 new Callback<List<Order>>() {
                     @Override
                     public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {

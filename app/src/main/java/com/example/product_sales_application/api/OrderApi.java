@@ -37,6 +37,12 @@ public interface OrderApi {
     @GET("order")
     Call<List<Order>> getAllOrderHistory();
 
+    @GET("order?page=1&")
+    Call<List<Order>> getLimitOrderByPhone(@Query("customerPhone") String phone,
+                                         @Query("sortBy") String fieldOrder,
+                                         @Query("order") String typeOrder,
+                                         @Query("limit") int limit);
+
     @GET("order")
     Call<List<Order>> getAllOrderByPhone(@Query("customerPhone") String phone,
                                          @Query("sortBy") String fieldOrder,

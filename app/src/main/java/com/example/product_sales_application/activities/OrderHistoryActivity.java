@@ -18,6 +18,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,11 +54,13 @@ public class OrderHistoryActivity extends AppCompatActivity {
     private OrderHistoryAdapter orderHistoryAdapter;
     private EditText edtSearchCusPhone;
     private Button buttonSearchInvoice;
-
+    private String strSearchvalue = "";
+    private AccountManager accountManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_history);
+        accountManager = CartManagerSingleton.getAccountManagerInstance(this);
 
         edtSearchCusPhone = findViewById(R.id.search_cust_phone);
         buttonSearchInvoice = findViewById(R.id.button_search_invoice_by_phone);
@@ -67,10 +70,22 @@ public class OrderHistoryActivity extends AppCompatActivity {
         toggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         navigationView = findViewById(R.id.nav);
+        if (isLogin()) {
+            navigationView.getMenu().findItem(R.id.login).setTitle("Đăng xuất");
+        } else {
+            navigationView.getMenu().findItem(R.id.login).setTitle("Đăng nhập");
+        }
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.login: {
+                    if (isLogin()) {
+                        accountManager.logOut();
+                        navigationView.getMenu().findItem(R.id.login).setTitle("Đăng nhập");
+                        drawerLayout.close();
+                        Toast.makeText(this, "Đăng xuất thành công.", Toast.LENGTH_LONG);
+                        return true;
+                    }
                     drawerLayout.close();
                     startActivityForResult(new Intent(OrderHistoryActivity.this, LoginActivity.class), RequestCode.HOME_LOGIN);
                     return true;
@@ -96,8 +111,8 @@ public class OrderHistoryActivity extends AppCompatActivity {
         buttonSearchInvoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String strSearchvalue = edtSearchCusPhone.getText().toString().trim();
-                getOrderWithPhone(strSearchvalue);
+                strSearchvalue = edtSearchCusPhone.getText().toString().trim();
+                getOrderWithPhone();
             }
         });
 
@@ -175,7 +190,6 @@ public class OrderHistoryActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
         if (result != null) {
@@ -236,24 +250,23 @@ public class OrderHistoryActivity extends AppCompatActivity {
         );
     }
 
-    private void getOrderWithPhone(String phone) {
+    private void getOrderWithPhone() {
         ProgressDialog dialog= new ProgressDialog(this);
         dialog.setMessage("Đang tìm kiếm đơn hàng.");
         dialog.setCancelable(false);
         dialog.setInverseBackgroundForced(false);
         dialog.show();
 
-        OrderApi.orderApi.getAllOrderHistory().enqueue(
+        OrderApi.orderApi.getAllOrderByPhone(strSearchvalue, "id", "desc").enqueue(
                 new Callback<List<Order>>() {
                     @Override
                     public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
+                        if(response.body().size() == listOrderHistoryData.size()){
+                            Toast.makeText(OrderHistoryActivity.this, "Tất cả đã hiển thị.", Toast.LENGTH_SHORT).show();
+                            dialog.hide();
+                            return;
+                        }
                         listOrderHistoryData = response.body();
-                        listOrderHistoryData = listOrderHistoryData
-                                .stream()
-                                .filter(element ->
-                                        element.getCustomerPhone().contains(phone)
-                                )
-                                .collect(Collectors.toList());
                         orderHistoryAdapter.setOrderList(listOrderHistoryData);
                         dialog.hide();
                     }

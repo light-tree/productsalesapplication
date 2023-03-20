@@ -3,6 +3,7 @@ package com.example.product_sales_application.activities;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -70,9 +71,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void checkLogin (){
+        ProgressDialog dialog=new ProgressDialog(this);
+        dialog.setMessage("Kiểm tra đăng nhập.");
+        dialog.setCancelable(false);
+        dialog.setInverseBackgroundForced(false);
+        dialog.show();
         Account account = new Account();
         boolean isError = validateAccount(account);
         if(isError){
+            dialog.hide();
             return;
         }
 
@@ -85,15 +92,19 @@ public class LoginActivity extends AppCompatActivity {
                             AccountManager accountManager = CartManagerSingleton.getAccountManagerInstance(LoginActivity.this);
                             accountManager.login();
                             accountManager.saveAccount(list.get(0));
+                            dialog.hide();
+                            Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_LONG).show();
+                            setResult(RESULT_OK);
                             finish();
                             return;
                         }
-                        Toast.makeText(getApplicationContext(), "Đăng nhập không thành công", Toast.LENGTH_LONG).show();
+                        Toast.makeText(LoginActivity.this, "Đăng nhập  không thành công", Toast.LENGTH_LONG).show();
                     }
 
                     @Override
                     public void onFailure(Call<List<Account>> call, Throwable t) {
-                        Toast.makeText(getApplicationContext(), "Đăng nhập không thành công", Toast.LENGTH_LONG).show();
+                        dialog.hide();
+                        Toast.makeText(LoginActivity.this, "Đăng nhập không thành công", Toast.LENGTH_LONG).show();
                     }
                 }
         );

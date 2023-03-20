@@ -16,6 +16,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,9 +51,6 @@ import retrofit2.Response;
 public class HomeActivity extends AppCompatActivity {
 
 
-
-
-
     private RecyclerView productTypeView;
     private List<ProductTypeDomain> productTypeDomainList;
     private ProductTypeAdapter productTypeAdapter;
@@ -84,12 +82,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-
-
-//        SharedPreferences preferences = this.getSharedPreferences("cart_prefs", this.MODE_PRIVATE);
-//        SharedPreferences.Editor editor = preferences.edit();
-//        editor.clear(); // xóa toàn bộ dữ liệu SharedPreferences
-//        editor.apply(); // lưu thay đổi vào SharedPreferences
         accountManager = CartManagerSingleton.getAccountManagerInstance(this);
         drawerLayout = findViewById(R.id.drawer_layout_home);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
@@ -97,17 +89,29 @@ public class HomeActivity extends AppCompatActivity {
         toggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         navigationView = findViewById(R.id.nav);
+        if (isLogin()) {
+            navigationView.getMenu().findItem(R.id.login).setTitle("Đăng xuất");
+        } else {
+            navigationView.getMenu().findItem(R.id.login).setTitle("Đăng nhập");
+        }
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.login: {
+                    if (isLogin()) {
+                        accountManager.logOut();
+                        navigationView.getMenu().findItem(R.id.login).setTitle("Đăng nhập");
+                        drawerLayout.close();
+                        Toast.makeText(this, "Đăng xuất thành công.", Toast.LENGTH_LONG);
+                        return true;
+                    }
                     drawerLayout.close();
                     startActivityForResult(new Intent(HomeActivity.this, LoginActivity.class), RequestCode.HOME_LOGIN);
                     return true;
                 }
                 case R.id.order_history: {
                     drawerLayout.close();
-                    if(!isLogin()){
+                    if (!isLogin()) {
                         showErrorNotLogin();
                         return false;
                     }
@@ -201,7 +205,7 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         if (id == R.id.scanner) {
-            if(!isLogin()){
+            if (!isLogin()) {
                 showErrorNotLogin();
                 return false;
             }
@@ -225,12 +229,11 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if(requestCode == RequestCode.HOME_LOGIN){
-            Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_LONG);
-            return;
+            if(resultCode == RESULT_OK){
+                navigationView.getMenu().findItem(R.id.login).setTitle("Đăng xuất");
+            }
         }
-
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
         if (result != null) {
@@ -244,6 +247,15 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        accountManager.logOut();
+        // Handle the event when the app is closing
+        Log.d("HomeActivity", "onDestroy: App is closing");
+
     }
 
     private void getProduct() {
