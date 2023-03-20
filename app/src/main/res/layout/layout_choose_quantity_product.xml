@@ -82,7 +82,12 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.3"
-                    android:text="-"
+                    android:backgroundTint="#CCCCCC"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center|top"
+                    android:text="\u2212"
+                    android:textAlignment="gravity"
+                    android:textColor="#000000"
                     />
 
                 <TextView
@@ -98,7 +103,13 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.3"
-                    android:text="+" />
+                    android:backgroundTint="#1E90FF"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center|top"
+                    android:text="\u002B"
+                    android:textAlignment="gravity"
+                    android:textColor="#000000"
+                    />
 
             </LinearLayout>
 

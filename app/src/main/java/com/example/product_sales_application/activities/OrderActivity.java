@@ -151,7 +151,7 @@ public class OrderActivity extends AppCompatActivity {
 
                             @Override
                             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                                dayOfMonth += 1;
+
                                 month += 1;
                                 String dayOfMonthStr = dayOfMonth < 10 ? "0" + dayOfMonth : String.valueOf(dayOfMonth);
                                 String monthStr = month < 10 ? "0" + month : String.valueOf(month);
@@ -160,9 +160,10 @@ public class OrderActivity extends AppCompatActivity {
                                 String dateStr = (dayOfMonthStr) + "/" + (monthStr) + "/" + yearStr;
 
                                 requiredDate.setText(dateStr);
+
                                 // Thiết lập ngày đã chọn vào EditText
                               //  requiredDate.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
-                                isDateValid(requiredDate.getText().toString());
+
 
                             }
                         }, year, month, day);
@@ -170,23 +171,6 @@ public class OrderActivity extends AppCompatActivity {
                 datePickerDialog.getDatePicker().setMinDate(minDateCalendar.getTimeInMillis());
                 datePickerDialog.getDatePicker().setMaxDate(maxDateCalendar.getTimeInMillis());
                 datePickerDialog.show();
-            }
-        });
-        requiredDate.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Không cần xử lý gì ở đây
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String userInput = s.toString();
-                isDateValid(userInput);
             }
         });
 
@@ -465,13 +449,14 @@ public class OrderActivity extends AppCompatActivity {
         }
     }
     private void checkOut(Account staffAccount){
+        boolean check = false;
         Order order = new Order();
         order.setCustomerAddress(customerAddress.getText().toString());
         order.setCustomerFullName(customerName.getText().toString());
         order.setCustomerPhone(customerPhone.getText().toString());
         Date today = new Date();
         order.setOrderedDate(today);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+
         order.setRequiredDate(convertStringToDate(requiredDate.getText().toString()));
         order.setStaff(staffAccount);
         order.setOrderDetailList(orderDetailList);
@@ -508,12 +493,12 @@ public class OrderActivity extends AppCompatActivity {
 
                         editor.clear(); // xóa toàn bộ dữ liệu SharedPreferences
                         editor.apply(); // lưu thay đổi vào SharedPreferences
-
+                        showSuccessOrderMessage("Đặt hàng thành công");
                     }
 
                     @Override
                     public void onFailure(Call<Order> call, Throwable t) {
-
+                       showErrorMessage("Đặt hàng không thành công, Vui lòng thử lại sau");
                     }
                 }
         );
@@ -529,8 +514,7 @@ public class OrderActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 Account account = accountManager.getAccount();
                 checkOut(account);
-                Intent intent = new Intent(OrderActivity.this, HomeActivity.class);
-                startActivity(intent);
+
             }
         });
         builder.setNegativeButton("Đóng", new DialogInterface.OnClickListener() {
@@ -627,4 +611,31 @@ public class OrderActivity extends AppCompatActivity {
         return date;
     }
 
+    public void showSuccessOrderMessage(String message) {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setTitle("Thông báo");
+        builder.setMessage(message);
+        builder.setPositiveButton("Tiếp tục mua sắm", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                Intent intent = new Intent(OrderActivity.this, HomeActivity.class);
+                startActivity(intent);
+            }
+        });
+        android.app.AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void showErrorMessage(String message) {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setTitle("Error");
+        builder.setMessage(message);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        android.app.AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 }

@@ -51,6 +51,7 @@ public class CartActivity extends AppCompatActivity {
     private Button btnCancel;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -257,4 +258,6 @@ public class CartActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
+
 }
